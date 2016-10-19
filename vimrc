@@ -96,6 +96,11 @@ set cursorcolumn
 set scrolloff=10
 
 "折叠行 za是打开或者关闭折叠 zM关闭所有折叠 zR打开所有折叠
+"zf是创建折叠，XXzf+ - 分别是对下面或者上面多少行进行这些
+"zd是删除折叠的意思
+"zD  循环删除 (Delete) 光标下的折叠，即嵌套删除折叠。仅当 'foldmethod' 设为 "manual" 或 "marker" 时有效。
+" zE  除去 (Eliminate) 窗口里“所有”的折叠。仅当 'foldmethod' 设为 "manual" 或 "marker" 时有效。
+
 set foldenable
 set foldmethod=manual       "手动的折叠
 "set foldmethod=syntax       "基于语义的折叠
@@ -135,7 +140,7 @@ Plugin 'vim-airline/vim-airline-themes'     "airline的主题
 Plugin 'easymotion/vim-easymotion'      "类似于vimium中的F键的功能
 Plugin 'vim-scripts/The-NERD-tree'      "打开文件所在路径的文件树
 Plugin 'asins/vimcdoc'      "vim中文帮助文档
-"Plugin 'Valloric/YouCompleteMe'         "智能补全
+Plugin 'Valloric/YouCompleteMe'         "智能补全
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'Sirver/ultisnips'       "智能补全，输入提示
 Plugin 'kien/ctrlp.vim'     "查找文件 在全部的文件系统中 而不是在文件中查找
@@ -148,6 +153,7 @@ Plugin 'thinca/vim-quickrun'            "在vim中直接运行一个小程序
 Plugin 'sjl/gundo.vim'              "类似与git的功能，本地的版本控制
 Plugin 'chusiang/vim-sdcv'          "在vim中使用sdcv
 Plugin 'scrooloose/nerdcommenter'       "快速注释
+Plugin 'aceofall/gtags.vim'       "
 
 
 call vundle#end()
@@ -176,10 +182,10 @@ nmap <leader>a :A<CR>
 
 "[airline.vim] <Plugin>
 "底部状态栏
-let g:airline_powerline_fonts = 1
-let g:airline_detect_modified=1
-let g:airline_detect_iminsert=1
-let g:airline_detect_paste=1
+ let g:airline_powerline_fonts = 1
+ let g:airline_detect_modified=1
+ let g:airline_detect_iminsert=1
+ let g:airline_detect_paste=1
 " let g:airline_section_gutter='%{getcwd()}'
 "let g:airline_section_error = '%{strftime("%c")}'   "显示时间
 "let g:airline_colorscheme='solarized_light'
@@ -217,24 +223,24 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 set helplang=cn
 "[vimcdoc]
 
-
 " [YouCompleteMe](plugin)(complete)
-"let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 "在注释输入中也能补全
-"let g:ycm_complete_in_comments = 1
+let g:ycm_complete_in_comments = 1
 "在字符串输入中也能补全
-"let g:ycm_complete_in_strings = 1
+let g:ycm_complete_in_strings = 1
 "注释和字符串中的文字也会被收入补全
-"let g:ycm_collect_identifiers_from_comments_and_strings = 0
+let g:ycm_collect_identifiers_from_comments_and_strings = 0
 "与ultisnips不冲突
-"let g:ycm_key_list_select_completion = ['<c-n>', '<Down>']
-"let g:ycm_key_list_previous_completion = ['<c-p>', '<Up>']
-"let g:ycm_confirm_extra_conf = 0
-"let g:ycm_add_preview_to_completeopt = 1
+let g:ycm_key_list_select_completion = ['<c-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<c-p>', '<Up>']
+"
+let g:ycm_confirm_extra_conf = 0
+let g:ycm_add_preview_to_completeopt = 1
 "let g:ycm_autoclose_preview_window_after_completion = 1
-"let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ycm_autoclose_preview_window_after_insertion = 1
 "let g:ycm_show_diagnostics_ui = 0
-"[YouCompleteMe]$
+" [YouCompleteMe]$
 
 
 " [ultisnips](plugin)(efficiency)
@@ -358,6 +364,13 @@ let g:NERDTrimTrailingWhitespace = 1
 
 "[nerdcommenter]$
 
+" ctags 使用:cs find g XX可以查找对应的定义 在光标处 使用Ctrl+]查询定义
+" 使用Ctrl+t返回查询
+set cscopetag
+set cscopeprg='gtags-cscope'
+let GtagsCscope_Auto_Load = 1
+let CtagsCscope_Auto_Map = 1
+let GtagsCscope_Quiet = 1
 
 
 
