@@ -93,7 +93,7 @@ set cursorcolumn
 
 
 "距离底部的空行
-set scrolloff=10
+set scrolloff=15
 
 "折叠行 za是打开或者关闭折叠 zM关闭所有折叠 zR打开所有折叠
 "zf是创建折叠，XXzf+ - 分别是对下面或者上面多少行进行这些
@@ -365,7 +365,7 @@ let g:NERDTrimTrailingWhitespace = 1
 "[nerdcommenter]$
 
 " ctags 使用:cs find g XX可以查找对应的定义 在光标处 使用Ctrl+]查询定义
-" 使用Ctrl+t返回查询
+" 使用Ctrl+t返回查询 需要在系统上安装global
 set cscopetag
 set cscopeprg='gtags-cscope'
 let GtagsCscope_Auto_Load = 1
