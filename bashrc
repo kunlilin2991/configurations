@@ -107,7 +107,7 @@ alias cpi='cp -i'        #询问是否覆盖同名文件
 alias rmf='rm -rf'      #递归删除文件夹
 alias du='du -h'
 alias dua='du -sh'     #显示文件夹的使用情况，合计大小 以合适的单位显示 分别是sh两个参数 
-
+alias rm='rm -i'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
