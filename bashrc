@@ -104,10 +104,13 @@ alias nautilusd='nautilus ./'
 alias psU='ps -U root -u root u'       #显示以root用户运行的程序
 alias psA='ps -A'       #显示所有运行的进程
 alias cpi='cp -i'        #询问是否覆盖同名文件
+alias cpsh='cp -rf'     #复制整个文件夹
 alias rmf='rm -rf'      #递归删除文件夹
 alias du='du -h'
 alias dua='du -sh'     #显示文件夹的使用情况，合计大小 以合适的单位显示 分别是sh两个参数 
 alias rm='rm -i'
+alias dic='sdcv'
+alias pdf='FoxitReader'  # 用foxitreader打开文件
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
