@@ -113,6 +113,11 @@ alias dua='du -sh'     #显示文件夹的使用情况，合计大小 以合适�
 alias dic='sdcv'
 alias pdf='FoxitReader'  # 用foxitreader打开文件
 
+#some alias for vim
+alias vimR='vim -R' # 以只读模式打开vim 但是可以强制的修改
+alias vimM='vim -M' # 以只读模式打开vim 同时不能强制修改 也就是关闭了modify的功能
+alias vime='vim +' # 从文件的末尾开始打开文件，直接跳转到文件最后
+
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
