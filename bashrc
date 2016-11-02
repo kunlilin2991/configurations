@@ -97,6 +97,7 @@ alias llm='ls -alhF --color=always|more'
 alias lal='ls -A|less'
 alias lam='ls -a --color=always |more'
 alias llt='ls -alhFt'    # 按照事件来排序 列出所有的文件
+alias lswc='ls|wc -l' # 统计目前文件夹下文件的多少
 alias cdf='cd $(dirname $(find ' # 后面是find命令 需要最后加两个括号
 
 alias cls='clear'
@@ -108,7 +109,7 @@ alias cpsh='cp -rf'     #复制整个文件夹
 alias rmf='rm -rf'      #递归删除文件夹
 alias du='du -h'
 alias dua='du -sh'     #显示文件夹的使用情况，合计大小 以合适的单位显示 分别是sh两个参数 
-alias rm='rm -i'
+# alias rm='rm -i'
 alias dic='sdcv'
 alias pdf='FoxitReader'  # 用foxitreader打开文件
 
