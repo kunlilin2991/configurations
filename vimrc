@@ -144,7 +144,7 @@ Plugin 'Valloric/YouCompleteMe'         "智能补全
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'Sirver/ultisnips'       "智能补全，输入提示
 Plugin 'kien/ctrlp.vim'     "查找文件 在全部的文件系统中 而不是在文件中查找
-Plugin 'nathanaelkane/vim-indent-guides'    "可视的显示缩进
+" Plugin 'nathanaelkane/vim-indent-guides'    "可视的显示缩进
 Plugin 'scrooloose/syntastic'    "显示错误信息
 Plugin 'majutsushi/tagbar'      "查看结构体
 Plugin 'vim-scripts/TaskList.vim'       "通过fixme tudo等去快速跳转
@@ -270,10 +270,10 @@ let g:ctrlp_open_multiple_files = 'v'
 
 " [vim-indent-guide](plugin)(show)
 " 可视的显示缩进
-let g:indent_guides_enable_on_vim_startup=1
-let g:indent_guides_start_level=2
-let g:indent_guides_guide_size=1
-let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
+" let g:indent_guides_enable_on_vim_startup=1
+" let g:indent_guides_start_level=2
+" let g:indent_guides_guide_size=1
+" let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
 
 
 " [syntastic](plugin)(syntax)
