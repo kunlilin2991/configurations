@@ -97,6 +97,8 @@ alias llm='ls -alhF --color=always|more'
 alias lal='ls -A|less'
 alias lam='ls -a --color=always |more'
 alias llt='ls -alhFt'    # 按照事件来排序 列出所有的文件
+alias lspwd='ls | sed "s:^:`pwd`/:"' # 列出文件的绝对路径
+alias lsf='ls -AF | grep /$'  # 只显示目录下的文件夹
 alias lswc='ls|wc -l' # 统计目前文件夹下文件的多少
 alias cdf='cd $(dirname $(find ' # 后面是find命令 需要最后加两个括号
 
