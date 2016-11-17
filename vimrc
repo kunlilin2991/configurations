@@ -186,6 +186,7 @@ nmap <leader>a :A<CR>
  let g:airline_detect_modified=1
  let g:airline_detect_iminsert=1
  let g:airline_detect_paste=1
+ let g:airline#extensions#whitespace#show_message = 0 " 不显示末尾空行
 " let g:airline_section_gutter='%{getcwd()}'
 "let g:airline_section_error = '%{strftime("%c")}'   "显示时间
 "let g:airline_colorscheme='solarized_light'
