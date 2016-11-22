@@ -1,0 +1,549 @@
+capability的主要定义的文件有 <linux/capability.h> <uapi/linux/capability>
+前者定义的主要是各类操作的函数，后者是关于cap的基本定义，包括37个cap的定义
+
+
+	only executable files have capabilities, libraries do not have capabilities.
+	the set about capalibities is allowed set, forced set, effective set. 
+    there is another explation about the cap sets, permitted set effective set inheritable set and bounding set.
+    permitted set: 当前进程可以授予给他自己的effective set和permitted set的权能的集合 
+    effective set：进程可以具体执行的权能
+    inheritable set:可以通过execve() 来传递的权能
+    bounding set:具体可以通过execve（）来继承的权能，在uid=0时的时候，起作用，限制inheritable set
+
+    Unprivileged users can create user namespaces, map themselves to a
+    nonzero uid, and create both privileged (relative to their
+    namespace) and unprivileged process trees.  This is currently more
+    or less impossible.  Hallelujah!
+    
+    pA的值的改变遵循一下的粗略的规则：当pI pP中的某一权能没有被设定的时候，pA就不能设定这个权能。当从pP或者pI中将某个权能丢弃的时候，pA也同样将这个权能位丢弃。pA保证了当从setuid运行结束以后，其无条件的清除了pA。
+
+    pA obeys invariant that no bit can ever be set in pA if it is not be set in both pI and pP.  Dropping a bit from pP or pI drops that
+    bit from pA.  This ensures that existing programs that try to drop
+    capabilities still do so, with a complication.  Because capability
+    inheritance is so broken, setting KEEPCAPS, using setresuid to
+    switch to nonroot uids, and calling execve effectively drops
+    capabilities.  Therefore, setresuid from root to nonroot
+    unconditionally clears pA.  Processes that don't like this can
+    re-add bits to pA afterwards.
+
+    The capability evolution rules are changed:
+
+      pA' = (file caps or setuid or setgid ? 0 : pA)
+      pP' = (X & fP) | (pI & fI) | pA'
+      pI' = pI
+      pE' = (fE ? pP' : pA')
+      X is unchanged
+
+    If you are nonroot but you have a capability, you can add it to pA.
+    If you do so, your children get that capability in pA, pP, and pE.
+    For example, you can set pA = CAP_NET_BIND_SERVICE, and your
+    children can automatically bind low-numbered ports.  Hallelujah!
+
+
+cap用到的函数 对capability以及其三个集合的操作
+#include <sys/capability.h>
+int cap_clear(cap_t cap_p);
+int cap_clear_flag(cap_t cap_p, cap_flag_t flag);
+int cap_get_flag(cap_t cap_p, cap_value_t cap,                 cap_flag_t
+flag, cap_flag_value_t *value_p);
+int cap_set_flag(cap_t cap_p, cap_flag_t flag, int ncap,
+  const cap_value_t *capsint ncap,", cap_flag_value_t " value ");"
+int cap_compare(cap_t cap_a, cap_t cap_b);
+Link with -lcap.
+
+参数解释
+Description
+
+These functions work on a capability state held in working storage. A cap_t holds information about the capabilities in each of the three sets, Permitted, Inheritable, and Effective. Each capability in a set may be clear (disabled, 0) or set (enabled, 1).
+cap_t是一个不透明的指针，其包含在任意的三个集合中的cap的信息。在这三个集合中的权能或者被置位或者被清零。
+These functions work with the following data types:
+
+cap_value_t：identifies a capability, such as CAP_CHOWN.标示一个权能，具体的权能是什么。
+cap_flag_t：identifies one of the three flags associated with a capability (i.e., it identifies one of the three capability sets). Valid values for this type are CAP_EFFECTIVE, CAP_INHERITABLE or CAP_PERMITTED.作用于哪个集合，具体集合是什么。
+cap_flag_value_t：identifies the setting of a particular capability flag (i.e, the value of a capability in a set). Valid values for this type are CAP_CLEAR (0) or CAP_SET (1).设定操作，即这个权能在集合中是被置位还是被清零。
+一般对一个进程进行权能的增加和删除的时候，使用4个函数，其执行的操作如下：(一般只能对当前的进程执行权能操作）
+1 通过cap_init()初始化一个cap_t用来保存要操作的权能，这个权能不是要删除或者增加的权能，而是作为一个桥梁，即操作与进程之间的桥梁。
+2 调用int cap_set_flag(cap_t cap_p, cap_flag_t flag, int ncap,const cap_value_t *caps, cap_flag_value_t value);实现将权能传递给桥梁cap_t上。
+    参数解释：
+    cap_t: 用来存放能力值的变量 第一步初始化的变量，待会在第三步中作为唯一的参数。
+    cap_flag_t:标示三个权能集合中的哪一个
+    ncap:要操作的权能的个数
+    cap_value_t:具体的权能，用一个cap_value_t的数组存储
+    cap_flag_value_t:操作的类型，是置位还是清除，CAP_SET CAP_CLEAR.
+3 调用cap_set_proc实现将cap_t中的权能作用于当前的进程。
+4 cap_free释放刚刚init的cap_t
+
+capget capset : get/set capabilities of threads.:对线程的权能进行操作。这两个函数属于系统调用
+函数原型为：
+
+int capget(cap_user_header_t hdrp, cap_user_data_t datap);
+
+int capset(cap_user_header_t hdrp, const cap_user_data_t datap);
+
+
+ Each thread has a set of effective capabilities identifying which capabilities (if any) it may currently exercise
+Each thread also has a set of inheritable capabilities that may be passed through an execve(2) call, and a set of permitted capabilities that it can make effective or inheritable
+每一个线程同样含有那三个权能的集合，effective inheritable permitted
+These two system calls are the raw kernel interface for getting and setting thread capabilities. 
+capSEt capget是两个系统调用，用来获取或者设置线程的权能
+
+ #define _LINUX_CAPABILITY_VERSION_1  0x19980330
+ #define _LINUX_CAPABILITY_U32S_1     1
+
+#define _LINUX_CAPABILITY_VERSION_2  0x20071026
+ #define _LINUX_CAPABILITY_U32S_2     2
+
+typedef struct __user_cap_header_struct {
+    __u32 version;
+    int pid;
+ } *cap_user_header_t;
+
+typedef struct __user_cap_data_struct {
+    __u32 effective;
+    __u32 permitted;
+    __u32 inheritable;
+ } *cap_user_data_t;
+The effective, permitted, and inheritable fields are bit masks of the capabilities defined in capability
+effective inheritable permitted不是三个集合，合适三个mask，
+
+Note the CAP_* values are bit indexes and need to be bit-shifted before ORing into the bit fields.
+CAP_*是一个位索引，在ORing到位文件之前，必须经过左移或右移。
+To define the structures for passing to the system call you have to use the struct __user_cap_header_struct and struct __user_cap_data_struct names because the typedefs are only pointers.
+要通过系统调用，即使用上面的两个函数，就必须使用struct __user_cap_header_seruct 和atruct __user_cap_data_struct，因为这个两个数据结构是唯一的指针。
+在2.6.25使用的权能是第一版本 也就是_LINUX_CAPABILITY_VERSION_1 其权能是32位的，在这之后的版本使用的是_LINUX_CAPABILITY_VERSION_2是64位的权能。
+ 
+ 64-bit capabilities use datap[0] and datap[1], whereas 32-bit capabilities use only datap[0].
+ 64位使用的是datap[0]和datap[1]而 32使用的只用datap[0]
+
+For capget() calls, one can probe the capabilities of any process by specifying its process ID with the hdrp->pid field value
+使用capget可以获取任何一个进程的权能，而通过上述的函数圆形可以知道，所需要的工作仅仅就是将进程的id赋值给hdrp->pid hdrp是一个cap_user_header_t类型的函数，其函数定义在上面声明了。
+
+在cap的操作中，必然涉及到文件系统，文件系统VFS又分为两种情况，支持capability和不支持capability的两种情况
+
+With VFS capability support
+
+VFS Capability support creates a file-attribute method for adding capabilities to privileged executables. This privilege model obsoletes kernel support for one process asynchronously setting the capabilities of another. That is, with VFS support, for capset() calls the only permitted values for hdrp->pid are 0 or getpid(2), which are equivalent.
+支持权能的文件系统VFS使用文件属性的方法来添加对于特权运行的文件的权能，这种模式舍弃了内核对其他进程异步设定权能的支持，在这种模式下，调用capset系统调用时，其参数hdrp->pid的唯一的合法值是0或者由getpid得到的数值。
+
+Without VFS capability support
+
+When the kernel does not support VFS capabilities, capset() calls can operate on the capabilities of the thread specified by the pid field of hdrp when that is nonzero, or on the capabilities of the calling thread if pid is 0. 
+当VFS不支持cap的时候，情况如下：当调用capset的线程所属于的进程的pid为0的时候，capset可以直接作用与其的cap上，或者capset能够操作在调用capset的进程的dfrp->pid= 非0时候的情况，这个情况也是作用于进程中的线程上。
+ If pid refers to a single-threaded process, then pid can be specified as a traditional process ID; operating on a thread of a multithreaded process requires a thread ID of the type returned by gettid(2).
+当调用进程是一个单线程的进程的时候，其capset可以直接使用，但是，当调用进程是一个多线程的进程的时候，就需要调用gettid得到线程的ID，然后作用于具体的线程上面。
+For capset(), pid can also be: -1, meaning perform the change on all threads except the caller and init(8); or a value less than -1, in which case the change is applied to all members of the process group whose ID is -pid.
+两个特殊的情况：1 当调用capset的时候，其传入的pid=-1的时候，就将作用于除了当前调用的线程和init线程之外的所有的线程。2 当调用小于-1的时候，就作用于拥有同一个pid的所有的成员。
+
+capability 与LSM的关系。
+
+(Kernel Version: 4.9.0-rc3)
+
+At present, the capabilities logic for computing process capabilities on execve and set*uid, checking capabilities for a particular process, saving and checking capabilities for netlink messages, and handling the capget and capset system calls have been moved into the capabilities module. 
+capability的大部分的功能都被移动到了一个模块里边了。这个模块就是capabilityies module。但是，仍然存在一些地方并没有被转移到这个模块中。这些地方是在内核中直接修改或实施的。
+ the current version of the LSM patch does allow a security module to completely replace the assignment and testing of capabilities.
+ 当前版本的LSM运行其他的安全模块去完全的去替代现有的capability。
+These few locations would need to be changed if the capability-related fields were moved into the security field.
+假如要对cap进行替换修改，这些与cap有关的地方也需要修改。已知的存在于内核中的，还没有被移植到capability module的地点有：
+1 fs/open.c:sys_access
+2 fs/lockd/host.c:nlm_bind_host
+3 fs/nfsd/auth.c:nfsd_setuser
+4 fs/proc/array.c:task_cap
+以上的地方是还没有移植到cap的模块中的，需要特别处理的。
+
+除了上述的几个地方，其余的地方都已经移植到capability module中了。
+在lsm启动的的时候，security/security.c中，第54行，security_init的第一步就是启动cap,通过执行函数capability_add_hooks();完成对应的操作。
+
+
+在/proc/sys/kernel/cap_last_cap中定义了现在有多少个cap，目前是37个，这个文件是被书写的还是根据什么来由kernel来确定的？？？？
+
+Capabilities and execution of programs by root      使用root来执行程序
+       In order to provide an all-powerful root using capability sets,
+       during an execve(2):
+
+       1. If a set-user-ID-root program is being executed, or the real user
+          ID of the process is 0 (root) then the file inheritable and
+          permitted sets are defined to be all ones (i.e., all capabilities
+          enabled).
+
+       2. If a set-user-ID-root program is being executed, then the file
+          effective bit is defined to be one (enabled).
+
+       The upshot of the above rules, combined with the capabilities
+       transformations described above, is that when a process execve(2)s a
+       set-user-ID-root program, or when a process with an effective UID of
+       0 execve(2)s a program, it gains all capabilities in its permitted
+       and effective capability sets, except those masked out by the
+       capability bounding set.  This provides semantics that are the same
+       as those provided by traditional UNIX systems.
+通过上述的描述两个规则，当程序运行set-user-ID-root的程序或者以root用户运行的时候，他能够模仿出跟传统的unix系统提供的策略一样的效果。
+这样就提供了对传统的兼容。
+
+capability bounding set
+
+The capability bounding set is a security mechanism that can be used
+       to limit the capabilities that can be gained during an execve(2).
+       The bounding set is used in the following ways:
+
+    * During an execve(2), the capability bounding set is ANDed with the
+         file permitted capability set, and the result of this operation is
+         assigned to the thread's permitted capability set.  The capability
+         bounding set thus places a limit on the permitted capabilities that
+         may be granted by an executable file.
+
+    * (Since Linux 2.6.25) The capability bounding set acts as a limiting
+         superset for the capabilities that a thread can add to its
+         inheritable set using capset(2).  This means that if a capability
+         is not in the bounding set, then a thread can't add this capability
+         to its inheritable set, even if it was in its permitted
+         capabilities, and thereby cannot have this capability preserved in
+         its permitted set when it execve(2)s a file that has the capability
+         in its inheritable set.
+    * (prior to linux 2.6.25)the capability bounding set is a system-
+       wide attribute that affects all threads on the system.  The bounding
+       set is accessible via the file /proc/sys/kernel/cap-bound.
+       (Confusingly, this bit mask parameter is expressed as a signed
+       decimal number in /proc/sys/kernel/cap-bound.)
+       Only the init process may set capabilities in the capability bounding
+       set; other than that, the superuser (more precisely: programs with
+       the CAP_SYS_MODULE capability) may only clear capabilities from this
+       set.
+    From Linux 2.6.25, the capability bounding set is a per-thread
+       attribute.  (There is no longer a system-wide capability bounding
+       set.)
+       The bounding set is inherited at fork(2) from the thread's parent,
+       and is preserved across an execve(2).
+
+       A thread may remove capabilities from its capability bounding set
+       using the prctl(2) PR_CAPBSET_DROP operation, provided it has the
+       CAP_SETPCAP capability.  Once a capability has been dropped from the
+       bounding set, it cannot be restored to that set.  A thread can
+       determine if a capability is in its bounding set using the prctl(2)
+       PR_CAPBSET_READ operation.
+
+    Removing capabilities from the bounding set is supported only if file
+       capabilities are compiled into the kernel.  In kernels before Linux
+       2.6.33, file capabilities were an optional feature configurable via
+       the CONFIG_SECURITY_FILE_CAPABILITIES option.  Since Linux 2.6.33,
+       the configuration option has been removed and file capabilities are
+       always part of the kernel.  When file capabilities are compiled into
+       the kernel, the init process (the ancestor of all processes) begins
+       with a full bounding set.  If file capabilities are not compiled into
+       the kernel, then init begins with a full bounding set minus
+       CAP_SETPCAP, because this capability has a different meaning when
+       there are no file capabilities.
+
+   *********************************************************************
+      pA' = (file caps or setuid or setgid ? 0 : pA)
+      pP' = (X & fP) | (pI & fI) | pA'
+      pI' = pI
+      pE' = (fE ? pP' : pA')
+      X is unchanged
+
+    P'(ambient) = (file is privileged) ? 0 : P(ambient)
+    P'(permitted) = (P(inheritable) & F(inheritable)) |F(permitted) & cap_bset) | P'(ambient)
+    P'(effective) = F(effective) ? P'(permitted) : P'(ambient)
+    P'(inheritable) = P(inheritable) 
+   *********************************************************************
+
+bouding set的作用是限制进程通过execve来获取权能。
+在execve中，bouding set要和文件的permitted capability set进行and运算，运算的结果赋予给线程的permitted capability set，因此，bounding set就可以对从执行文件中获取权能进行了限制。
+
+在2.6.25内核版本之后，bouding set更是作为一个超级集合存在的，线程可以通过capset系统调用来想其inheritable set中添加在bounding set中存在的权能。
+这个也意味着，当一个权能并不在bounding set中的时候，即使这个权能是在permitted set中，也不能添加到inheritable set中去，这也导致了当通过执行一个在其inheritable set中含有某个权能的可执行文件的时候，也不能将这个全能添加到对应的permitted set中去。a
+
+在2.6.25之前的Linux内核中，bounding set是一个全局的集合，能够影响所有的线程。这个集合存放在 /proc/sys/kernel/cap-bound中。
+这个也导致了只有init进程可以set这个集合中权能，root用户或者是拥有CAP_SYS_MODULE权能的用户只能从这个集合中剔除某个权能。
+在2.6.25之后的内核中，bounding set 就变成了一个针对没一个线程的集合了，
+
+bounding set通过fork()从其父进程那里获取，并且在execve()中被preserve。
+当一个线程用于CAP_SETCAP权能的时候，其可以通过prctl PR_CAPBSET_DROP的操作来从其bounding set中来去掉某个权能，但是，一旦去掉了这个权能，就不能再向这个权能中添加这个权能了。同样也可以通过prctl中的 PR_CAPBSET_READ操作来决定哪些权能能够被放到自己的bounding set中。 
+
+要将权能从bounding set中移除，kernel必须支持文件的权能选项。现在的kernel已经完全支持文件权能了，但是，2.6.33之前，这个只是一个选项，编译的时候必须进行选择才可以。在这之后，是默认的，都会编译到内核中。当kernel支持文件的cap以后，init进程的bounding set拥有所有的权能，但是，当kernel不支持文件的cap的时候，init进程的bounding set中含有不含CAP_SETPCAP之外的所有的权能。
+
+
+Safety checking for capability-dumb binaries   对于不支持cap的程序
+       A capability-dumb binary is an application that has been marked to
+       have file capabilities, but has not been converted to use the
+       libcap(3) API to manipulate its capabilities.  (In other words, this
+       is a traditional set-user-ID-root program that has been switched to
+       use file capabilities, but whose code has not been modified to
+       understand capabilities.)  For such applications, the effective
+       capability bit is set on the file, so that the file permitted
+       capabilities are automatically enabled in the process effective set
+       when executing the file.  The kernel recognizes a file which has the
+       effective capability bit set as capability-dumb for the purpose of
+       the check described here.
+这一类的成程序指的是程序已经支持了文件的cap属性，但是，还没有按照cap的要求来重新编写代码，还是传统的set-user-ID-root程序。对于这一类的程序 effective capability bit被设置到文件上，当程序运行这个文件的时候，进程就自动的获取了effective set。
+内核具有识别对于权能不支持的文件的能力，并且可以用于检查描述的目的。
+When executing a capability-dumb binary, the kernel checks if the process obtained all permitted capabilities that were specified in the file permitted set, after the capability transformations described above have been performed.  (The typical reason why this might not occur is that the capability bounding set masked out some of the capabilities in the file permitted set.) 
+当执行一个不支持权能的程序的时候，内核会检查进程是否已经取得了文件的permitted set中所声明的所有的权能。但是，当bounding set中不包含文件的permitted文件的权能的时候，就会导致进程不能获取文件要求的所有的权能。
+
+If the process did not obtain the full set of file permitted capabilities, then execve(2) fails with the error EPERM.  This prevents possible security risks that could arise when a capability-dumb application is executed with less privilege that it needs.  Note that, by definition, the application could not itself recognize this problem,since it does not employ the libcap(3) API.
+当一个进程无法获取全部的权能（file中声明的）的时候，execve就会返回一个错误，并执行失败。这个也从一个方面减少了通过不支持权能的程序来提权的危害。同时，这个程序是不能够获知这个错误的，因为其不能够调用libcap的api。
+
+
+Effect of user ID changes on capabilities 针对用户在普通用户和root用户之间切换的情况
+To preserve the traditional semantics for transitions between 0 and
+       nonzero user IDs, the kernel makes the following changes to a
+       thread's capability sets on changes to the thread's real, effective,
+       saved set, and filesystem user IDs (using setuid(2), setresuid(2), or
+       similar):
+  1. If one or more of the real, effective or saved set user IDs was previously 0, and as a result of the UID changes all of these IDs have a nonzero value, then all capabilities are cleared from the permitted and effective capability sets.
+  2. If the effective user ID is changed from 0 to nonzero, then all capabilities are cleared from the effective set.
+  3. If the effective user ID is changed from nonzero to 0, then the permitted set is copied to the effective set.
+  4. If the filesystem user ID is changed from 0 to nonzero (see setfsuid), then the following capabilities are cleared from the effective set: CAP_CHOWN, CAP_DAC_OVERRIDE, CAP_DAC_READ_SEARCH, CAP_FOWNER, CAP_FSETID, CAP_LINUX_IMMUTABLE (since Linux 2.6.30), CAP_MAC_OVERRIDE, and CAP_MKNOD (since Linux 2.6.30).  If the filesystem UID is changed from nonzero to 0, then any of these capabilities that are enabled in the permitted set are enabled in the effective set.
+ If a thread that has a 0 value for one or more of its user IDs wants to prevent its permitted capability set being cleared when it resets all of its user IDs to nonzero values, it can do so using the prctl(2) PR_SET_KEEPCAPS operation or the SECBIT_KEEP_CAPS securebits flag described below.
+
+为了防止在root和普通用户切换的时候，对于权能集合的改变，针对线程的real effective save 等三个uid集合，还有文件系统的user IDs(就是使用了setuid等的文件)设置如下的规定：
+1 当real save effective中的任意一个或多个的前值是0的时候，并且切换导致所有的id都变成了非0状态，那么清除permitted effective两个权能集合。
+2 当有效用户的id 也就是euid从0切换到非0的时候，清除effective set中的所有权能。
+3 当euid从非0切换到0,也就是用户变成了root的时候，将permitted set中的所有权能赋值到effective set中去。
+4 当文件系统用户id从0变成非0,也就是执行完一个setuid命令的时候，将CAP_CHOWN, CAP_DAC_OVERRIDE, CAP_DAC_READ_SEARCH, CAP_FOWNER, CAP_FSETID, CAP_LINUX_IMMUTABLE (since Linux 2.6.30), CAP_MAC_OVERRIDE, and CAP_MKNOD (since Linux 2.6.30)这些权能从effective set中清除。当执行一个setuid的程序的时候，在permitted中的权能都可以被赋值给effective set中。
+当一个线程中一个或几个user的id是0，但是，不想在切换的时候，将这个线程所有用户的权能都被清除，可以通过设置prctl中的PR_SET_KEEPCAPS操作和 SECBIT_KEEP_CAPS securebits的标志符来实现。
+
+
+Programmatically adjusting capability sets 编程来编写权能的集合
+ A thread can retrieve and change its capability sets using the capget(2) and capset(2) system calls.  However, the use of cap_get_proc(3) and cap_set_proc(3), both provided in the libcap package, is preferred for this purpose.  The following rules govern changes to the thread capability sets:
+
+ 1. If the caller does not have the CAP_SETPCAP capability, the new inheritable set must be a subset of the combination of the existing inheritable and permitted sets.
+
+ 2. (Since Linux 2.6.25) The new inheritable set must be a subset of the combination of the existing inheritable set and the capability bounding set.
+
+ 3. The new permitted set must be a subset of the existing permitted set (i.e., it is not possible to acquire permitted capabilities that the thread does not currently have).
+
+ 4. The new effective set must be a subset of the new permitted set.
+
+一个线程能够通过capget capset等来改变或者获取其权能，但是，对于编程，其更倾向使用cap_get_proc cap_set_proc这两个存在于libcap的包中的函数来实现这个过程。
+在操作权能集合的过程中，以下的规则必须被遵守。
+1 当调用者没有CAP_SETPCAP权能的时候，新的inheritable set必须是现在的inheritable set 和permitted set的组合的子集。
+2 从2.6.25之后，新的inheritable set必须是 inheritable set bounding set这两个集合的组合的子集。注意 上面是permmitted这里是bounding。
+3 新的permitted set 必须是原有的permitted set 的一个子集。
+4 新的effective set必须是新的permitted set 的一个子集。
+
+
+ The securebits flags: establishing a capabilities-only environment  :securebits 用来建立一个只允许cap的运行环境
+
+Starting with kernel 2.6.26, and with a kernel in which file capabilities are enabled, Linux implements a set of per-thread securebits flags that can be used to disable special handling of capabilities for UID 0 (root).  These flags are as follows:
+SECBIT_KEEP_CAPS
+              Setting this flag allows a thread that has one or more 0 UIDs
+              to retain its capabilities when it switches all of its UIDs to
+              a nonzero value.  If this flag is not set, then such a UID
+              switch causes the thread to lose all capabilities.  This flag
+              is always cleared on an execve(2).  (This flag provides the
+              same functionality as the older prctl(2) PR_SET_KEEPCAPS
+              operation.)
+
+SECBIT_NO_SETUID_FIXUP
+              Setting this flag stops the kernel from adjusting capability
+              sets when the thread's effective and filesystem UIDs are
+              switched between zero and nonzero values.  (See the subsection
+              Effect of user ID changes on capabilities.)
+
+SECBIT_NOROOT
+              If this bit is set, then the kernel does not grant
+              capabilities when a set-user-ID-root program is executed, or
+              when a process with an effective or real UID of 0 calls
+              execve(2).  (See the subsection Capabilities and execution of
+              programs by root.)
+
+SECBIT_NO_CAP_AMBIENT_RAISE
+              Setting this flag disallows raising ambient capabilities via
+              the prctl(2) PR_CAP_AMBIENT_RAISE operation.
+
+在linux 2.6.26之后，当内核支持文件的cap之后，就在每个线程中设置了一个securebits flags来用来禁止对于uid=0的权能的特殊处理。
+
+SECBIT_KEEP_CAPS：这个标志设定之后，一个线程中有0的uid，当其其他的用户要切换到uid！= 0 的时候，按照上面的说法，其会清除线程的所有的cap，但是，当设定了这个标志位之后，其可以重新获得这些权能，但是，这个标志位在execve中总是被清除。
+
+SECBIT_NO_SETUID_FIXUP：当设定了这个标志位的时候，在线程的euid或者文件系统的uid从0和非0之间切换的时候，禁止内核调整capability set
+
+SECBIT_NOROOT： 当这个标志位被设置之后，就会禁止内核将特权授予给set-user-ID-root的应用程序。同理，也不允许euid或者real uid是0的程序运行的时候，执行execve时也不授予其权能。
+
+SECBIT_NO_CAP_AMBIENT_RAISE： 设定了这个标志位之后，不允许通过prctl R_CAP_AMBIENT_RAISE 来操作ambient capabilities set
+
+Each of the above "base" flags has a companion "locked" flag. Setting any of the "locked" flags is irreversible, and has the effect of preventing further changes to the corresponding "base" flag.  The locked flags are: SECBIT_KEEP_CAPS_LOCKED, SECBIT_NO_SETUID_FIXUP_LOCKED, SECBIT_NOROOT_LOCKED, and SECBIT_NO_CAP_AMBIENT_RAISE_LOCKED.
+上述的几个flage都有一个与之对应的必备的locked flag。任何一个locked flags都是不可逆的，并且能够防止对与之对应的base flag的改变。这几个locked flag是如下：SECBIT_KEEP_CAPS_LOCKED, SECBIT_NO_SETUID_FIXUP_LOCKED, SECBIT_NOROOT_LOCKED, and SECBIT_NO_CAP_AMBIENT_RAISE_LOCKED.
+
+ The securebits flags can be modified and retrieved using the prctl(2) PR_SET_SECUREBITS and PR_GET_SECUREBITS operations.  The CAP_SETPCAP capability is required to modify the flags.
+
+ The securebits flags are inherited by child processes.  During an execve(2), all of the flags are preserved, except SECBIT_KEEP_CAPS which is always cleared.
+
+使用prctl的R_SET_SECUREBITS and PR_GET_SECUREBITS这两个操作，可以来修改和获取securebits flag , 但是要做上述的修改，需要线程含有CAP_SETPCAP的权能。
+securebits能够被子进程继承，在执行execve的时候，除了SECBIT_KEEP_CAPS之外，所有的标志位都会被保存，上面的那个flag始终被清除。 
+
+
+**********************************************************************
+***************在创建进程 fork进程的时候，权能是怎么继承的************
+**********************************************************************
+
+    fork()函数的定义在kernel/fork.c中(linux 4.8.2)	
+    进程获取cap一般是通过父子进程的继承得到的，在copy_process中 关于cap的操作在3.0之后都是集中到cred的数据结构中，关于cred的操作在fork.c的1355到1368行之间。首先 在1355capable() (linux4.8.2在第1374行) 函数的作用是返回bool值，检测	cap_sys_resource and cap_sys_admin  这两个权能，(这里是两个权能，capable的作用就是检测是否有执行这个功能的权能，这里用到的就是上述的两个权能 第一个权能的意思是 Allow manipulation of system clock Allow irix_stime on mips  setting the real-time clock 第二个权能的意思是Allow use of reboot()  )。
+    在capable通过之后，证明当前用户有权限进行fork的相关操纵，那样，就复制当前的cred来实现权能的继承。
+    调用 copy_creds(这个函数是在在另外一个文件中好实现的，位于kernel/cred.c)来复制相关的关于安全上下文以及权能的东西，从而实现了权能的继承。
+
+    在调用copy_creds()这个函数的时候，根据传入的参数，也就是clone_flag的不同来决定在cred的传递的时候，其方式的不同。
+
+    在调用copy_creds()函数的时候，调用了一个新的函数create_user_ns()，这个函数定义在kernel/user_namespace.c的文件中，在这个文件中，对于这个函数的解释是:
+/*
+ * Create a new user namespace, deriving the creator from the user in the
+ * passed credentials, and replacing that user with the new root user for the
+ * new namespace.
+ *
+ * This is called by copy_creds(), which will finish setting the target task's
+ * credentials.
+*/
+对于这个，不是很理解，namespace是什么，为什么这里要用一个建立一个namespace，并且绑定一个新的root用户？ 
+
+************************************************************
+**********以下的这一段是之前的理解，存在错误****************
+************************************************************
+	对于权能的修改，也是在这一步中实现的，其中new=prepare_creds()实现了准备新的安全上下文就是struct cred以用来修改，原因是task_struct的cred不能直接被修改，因此，必须创建一份新的拷贝来进行修改,在后面的判断中if(clone_flages & CLONE_NEWUSER){ret = create_user_ns(new);这一步中，就是判断若clone newuser为真，则创建一个新的命名空间，来启用新的cred，原文的注释是Create a new user namespace, deriving the creator from the user in the passed credentials, and replacing that user with the new root user for the new namespace.也就是说，当 clone newuser被置位了以后，就会启用一个新的root用户。
+
+************************************************************
+
+
+********************************************************************
+************在执行加载可执行文件的时候，权能是怎么具体体现的********
+********************************************************************
+以下的是在内核中的数据结构代表的实际的东西，在执行程序的时候，使用的是linux_binprm这个数据结构
+task_struct结构：代表任务（进程）
+linux_binprm结构：代表程序
+super_block结构：代表文件系统
+inode节点inode结构：代表管道，文件，或者Socket套接字
+file结构：代表打开的文件
+sk_buff结构：代表网络缓冲区（包）
+net_device结构：代表网络设备
+kern_ipc_perm结构：代表Semaphore信号，共享内存段，或者消息队列
+msg_msg：代表单个的消息
+另外，msg_msg结构，msg_queue结构，shmid_kernel结构被移到include/linux/msg.h和include/linux/shm.h这两个头文件中，使得安全模块可以使用这些定义。
+
+	sys_execve()的作用就是执行一个新的program
+	加载可执行文件调用的是do_execve()这个函数根据路径名等信息直接调用do_execveat_common() loading可执行文件。do_execveat_common文件位于fs/exec.c的文件中。
+    在整个函数中，没有使用capable()来对权能进行检测，所以，对于权能的检测一定存在于某个子函数的调用中。
+
+    在这个过程用到了一个必须的数据结构linux_binprm，这个数据结构是用来存储 加载二进制执行文件时候的arguments,这个数据结构在include\linux\binfmt.h的14行定义,其官方的注释是* This structure is used to hold the arguments that are used when loading binaries.
+    在这个数据结构中，同样含有关于权能的定义,分别有如下几个部分：
+   1  unsigned int
+		cred_prepared:1,/* true if creds already prepared (multiple
+				 * preps happen for interpreters) */
+		cap_effective:1;/* true if has elevated effective capabilities,
+				 * false if not; except for init which inherits
+				 * its parent's caps anyway */
+
+   2 struct cred *cred这一句的官方注释是new credentials。
+   3 int unsafe;		/* how unsafe this exec is (mask of LSM_UNSAFE_*) */
+
+    在上面的三个部分，第一个地方？？？？不明白，第二个地方是因为要启用新的进程，来执行可执行文件，所以需要创建一个新的cred来存储这些cred。
+以上的内容是在linux_binprm中的内容。下面对do_execveat_common()函数进行分析。
+
+    在相同的文件的1672行 retval = prepare_bprm_creds(bprm);函数，其作用是准备一个新的cred.
+    这个函数的调用过程是：
+   1)  retval = prepare_bprm_creds(bprm)调用函数int prepare_bprm_creds(struct linux_binprm *bprm) 这个函数与上一个函数在同一个文件中，第1323行。这个函数在源码中的官方注释是
+/*
+ * Prepare credentials and lock ->cred_guard_mutex.
+ * install_exec_creds() commits the new creds and drops the lock.
+ * Or, if exec fails before, free_bprm() should release ->cred and
+ * and unlock.
+ */
+
+   2) 执行函数int prepare_bprm_creds(struct linux_binprm *bprm) 调用kernel/cred.c文件中的struct cred *prepare_exec_creds(void)函数，这个函数在源码中的注释是
+/*
+ * Prepare credentials for current to perform an execve()
+ * - The caller must hold ->cred_guard_mutex
+ */
+
+   3)struct cred *prepare_exec_creds(void)函数在执行的过程中，调用函数new = prepare_creds();这个函数位于kernel/cred.c中，其官方的注释是
+/**
+ * prepare_creds - Prepare a new set of credentials for modification
+ *
+ * Prepare a new set of task credentials for modification.  A task's creds
+ * shouldn't generally be modified directly, therefore this function is used to
+ * prepare a new copy, which the caller then modifies and then commits by
+ * calling commit_creds().
+ *
+ * Preparation involves making a copy of the objective creds for modification.
+ *
+ * Returns a pointer to the new creds-to-be if successful, NULL otherwise.
+ *
+ * Call commit_creds() or abort_creds() to clean up.
+ */
+    在这个函数中仍然没有capable函数，没有权限的检查工作。
+    至此，完成了对于这个程序加载的cred的分配。
+
+继续执行do_execveat_common()函数，执行到第1679行，运行函数file = do_open_execat(fd, filename, flags);这个函数的作用是打开要执行的程序。
+具体分析这个程序：
+    do_open_execat()函数，其函数的定义在同一个文件的第800行，在这个函数中，也没有关于capable的函数调用。函数首先根据flag进行各种检查，查看是否有根据flag进行操作的权限，然后执行函数file = do_filp_open(fd, name, &open_exec_flags);
+    do_filp_open()函数定义在/fs/namei.c文件，在这个函数中，也没有关于capable的直接调用，在这一步中，定义了struct file 开始打开文件，执行函数filp = path_openat(&nd, op, flags | LOOKUP_RCU);开始打开文件。
+    path_openat()函数也在namei.c的文件中进行定义，在这个函数中，同样不存在capable的函数检查，执行函数file = get_empty_filp();获取一个空的未使用的文件描述符。
+    get_empty_filp()函数定义在file_table.c文件中，这个函数的官方注释是
+        /* Find an unused file structure and return a pointer to it.
+        * Returns an error pointer if some error happend e.g. we over file
+        * structures limit, run out of memory or operation is not permitted.
+        *
+         * Be very careful using this.  You are responsible for
+         * getting write access to any mount that you might assign
+         * to this filp, if it is opened for write.  If this is not
+         * done, you will imbalance int the mount's writer count
+         * and a warning at __fput() time.
+         */
+    在这个函数的第一行就定义了一个cred ：const struct cred *cred = current_cred();同时，在这函数get_empty_filp中的第133行，执行了关于capable的函数，检查的是CAP_SYS_ADMIN这个权限，(？？？？？为什么？？？？)然后在127行，执行了f->f_cred = get_cred(cred);将权限复制到了现有的要打开的文件上，与第一步执行的current_cred()函数对应。
+
+根据谷歌得到一下关于文件打开的信息：
+
+文件的打开操作在内核中的实现思路很简单：即通过用户态传递的路径逐项查找文件；如果该文件存在，那么内核将为该文件创建file结构；同时将该file结构与files数组关联，最终返回数组的索引作为用户态的文件描述符。
+
+路径查找是对给定的文件路径以目录项为单位进行逐级解析。主要包括以下几项内容：
+1.确定路径查找的起始位置。比如，起始位置可能是current->fs->cwd或current->fs->root；
+2.当前进程是否有对目录项关联的inode进行访问的权限；
+3.根据当前的目录项，对下一级目录项进行查找；这里的查找可能是向下查找子文件，也可能是向上反查父目录（比如下一级目录项为“..”）；
+4.处理挂载点问题；当前目录项如果是挂载点，那么必须处理不同文件系统之间的跨越；
+5.处理符号链接文件；如果当前目录项为一个符号链接文件，那么必须追随（follow）该文件所指向的真实文件；
+6.查找并创建文件路径中所缺失的部分；比如，通过open()创建一个新文件时，那么所传递的路径中可能有部分目录项当前是不存在的；
+其中，第1项是路径查找的首要工作；2~6项是在路径查找过程中，针对每个目录项进行检查确认的。
+
+负责open系统调用基本实现的是do_sys_open()，其内部所调用的do_filp_open函数承担了大部分open的实现过程，其中就包括路径查找。
+
+************************************************************
+根据以上的内容，其根本检查的根本在于对iNode的权能的检查，file中其实不需要特别的权能。而iNode中对权能的检查一般是对目录项选项的检查。
+
+！！！！但是在inode中并没有关于cred或者cap的定义，只是在其中定义了一个如下的内容：
+#ifdef CONFIG_SECURITY
+	void			*i_security;
+#endif
+
+在这里定义了一个security的指针，用于LSM吗？？？？？
+************************************************************
+path_openat()函数在执行中，主要作用于下面的几个步骤：
+
+该函数描述了整个路径查找过程的基本步骤，这里做简单说明。每个具体步骤的实现过程，将在本文以及后续文章中做详析说明。
+1.首先通过get_empty_flip()分配一个新的file结构，分配前会对当前进程的权限和文件最大数进行判断；
+2.path_init()对接下来的路径遍历做一些准备工作，主要用于判断路径遍历的起始位置，即通过根目录/，或当前路径（pwd），或指定路径（openat系统调用可以指定）；
+3.将当前进程的total_link_count置为0；
+3.link_path_walk()对所打开文件路径进行逐一解析，每个目录项的解析结果都存在nd参数中；
+4.根据最后一个目录项的结果，do_last()将填充filp所指向的file结构；
+5.如果上一步中的filp所指为空，将说明当前文件为符号链接文件；
+6.如果设置了LOOKUP_FOLLOW标志，则通过follow_link()进入符号链接文件所指文件，填充file；否则，直接返回当前符号链接文件的filp；
+7.最终返回file结构；
+
+
+
+
+	在exec.c的第1636行，retval=prepare_bprm_creds(bprm)去检查加载文件的cap等信息。prepare_bprm_creds(bprm)调用prepare_cred函数，这个函数的作用是为当前的执行execve的程序准备credentials，同时，调用者必须拥有cred_guard_mutex的标志位。在调用了prepare_cred的具体的分析在上文中已经提到了。
+
+	在inode中，存在两个数据结构 struct posix_acl *_acl *i_mapping, 在struct posix_acl的数据结构中，定义的是原始的ugo的访问控制的控制信息，进入posix_acl的数据结构中，其关于控制信息存放在struct posix_acl_entry 的数据结构中，在这个数据结构中定义了两个变量e_tag用于记录的是ugo的信息 e_perm用于记录的rwx的信息。
+
+	在inode中 定义了一个void * i_security的指针，用于指向LSM或者cap的安全信息(？？？？？？？？？？这一点并不确定）
+	in kernel file指的是struct file filp指的是指向file的指针
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
