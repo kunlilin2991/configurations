@@ -154,6 +154,7 @@ Plugin 'sjl/gundo.vim'              "类似与git的功能，本地的版本控�
 Plugin 'chusiang/vim-sdcv'          "在vim中使用sdcv
 Plugin 'scrooloose/nerdcommenter'       "快速注释
 Plugin 'aceofall/gtags.vim'       "
+Plugin  'honza/vim-snippets'        "与ultisnips组合的代码补全工具 使用的是这个工具中的引擎。其定义了各种操作
 
 
 call vundle#end()
@@ -171,8 +172,8 @@ syntax enable
 "let g:solarized_termcolors=256
 set background=dark
 colorscheme solarized
-"colorscheme lucario
-"colorscheme molokai
+" colorscheme lucario
+" colorscheme molokai
 
 
 "[a.vim]<Plugin>
@@ -224,23 +225,39 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 set helplang=cn
 "[vimcdoc]
 
-" [YouCompleteMe](plugin)(complete)
-let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
+
+" [YouCompleteMe][plugin](complete)
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+
+" 不显示开启vim时检查ycm_extra_conf文件的信息  
+let g:ycm_confirm_extra_conf=0
+set completeopt=longest,menu	"让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
+inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"	"回车即选中当前项
+"与ultisnips不冲突
+let g:ycm_key_list_select_completion = ['<c-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<c-p>', '<Up>']
+" 开启基于tag的补全，可以在这之后添加需要的标签路径  
+let g:ycm_collect_identifiers_from_tags_files=1
+"注释和字符串中的文字也会被收入补全
+let g:ycm_collect_identifiers_from_comments_and_strings = 0
+" 开启语义补全
+let g:ycm_seed_identifiers_with_syntax=1	
 "在注释输入中也能补全
 let g:ycm_complete_in_comments = 1
 "在字符串输入中也能补全
 let g:ycm_complete_in_strings = 1
-"注释和字符串中的文字也会被收入补全
-let g:ycm_collect_identifiers_from_comments_and_strings = 0
-"与ultisnips不冲突
-let g:ycm_key_list_select_completion = ['<c-n>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<c-p>', '<Up>']
-"
-let g:ycm_confirm_extra_conf = 0
+
 let g:ycm_add_preview_to_completeopt = 1
-"let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_autoclose_preview_window_after_insertion = 1
-"let g:ycm_show_diagnostics_ui = 0
+
+" 修改对C函数的补全快捷键，默认是CTRL + space，修改为ALT + ;
+let g:ycm_key_invoke_completion = '<M-;>'
+
+" 设置在下面几种格式的文件上屏蔽ycm
+let g:ycm_filetype_blacklist = {
+      \ 'tagbar' : 1,
+      \ 'nerdtree' : 1,
+      \}
 " [YouCompleteMe]$
 
 
@@ -248,12 +265,31 @@ let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:UltiSnipsExpandTrigger = "<tab>"
 let g:UltiSnipsJumpForwardTrigger = "<C-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
-let g:UltiSnipsSnippetDirectories=["UltiSnips","bundle/ultisnips/UltiSnips"]
+" let g:UltiSnipsSnippetDirectories=["mysnippets","bundle/ultisnips/mysnippets"]
 "[ultisnips] $
 
 
 " [RainbowParentheses](plugin)(color)
 " 给配对的括号着色
+let g:rbpt_colorpairs = [
+    \ ['brown',       'RoyalBlue3'],
+    \ ['Darkblue',    'SeaGreen3'],
+    \ ['darkgray',    'DarkOrchid3'],
+    \ ['darkgreen',   'firebrick3'],
+    \ ['darkcyan',    'RoyalBlue3'],
+    \ ['darkred',     'SeaGreen3'],
+    \ ['darkmagenta', 'DarkOrchid3'],
+    \ ['brown',       'firebrick3'],
+    \ ['gray',        'RoyalBlue3'],
+    \ ['darkmagenta', 'DarkOrchid3'],
+    \ ['Darkblue',    'firebrick3'],
+    \ ['darkgreen',   'RoyalBlue3'],
+    \ ['darkcyan',    'SeaGreen3'],
+    \ ['darkred',     'DarkOrchid3'],
+    \ ['red',         'firebrick3'],
+    \ ]
+let g:rbpt_max = 16
+let g:rbpt_loadcmd_toggle = 0
 autocmd VimEnter * RainbowParenthesesActivate
 autocmd Syntax * RainbowParenthesesLoadRound
 autocmd Syntax * RainbowParenthesesLoadSquare

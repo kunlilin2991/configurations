@@ -113,7 +113,8 @@ alias du='du -h'
 alias dua='du -sh'     #显示文件夹的使用情况，合计大小 以合适的单位显示 分别是sh两个参数 
 # alias rm='rm -i'
 alias dic='sdcv'
-alias pdf='FoxitReader'  # 用foxitreader打开文件
+# alias pdf='FoxitReader'  # 用foxitreader打开文件
+alias pdf='apvlv'        # 使用vim风格的pdf阅读器
 
 #some alias for vim
 alias vimR='vim -R' # 以只读模式打开vim 但是可以强制的修改
@@ -151,8 +152,9 @@ fi
 [[ $- != *i* ]] && return
 [[ -z "$TMUX" ]] && exec tmux
 
+# add cheat for bash following instruction on website
 
-
+# export EDITOR = /usr/bin/vim # this has some problems and it can also work while annotating it 
 
 
 
