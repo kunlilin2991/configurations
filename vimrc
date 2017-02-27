@@ -93,7 +93,8 @@ set cursorcolumn
 
 
 "距离底部的空行
-set scrolloff=15
+" set scrolloff=15
+set scrolloff =999  " 设定999的目的是编辑行始终在屏幕的中间一行。zz快捷键是手动设定在屏幕的中间。
 
 "折叠行 za是打开或者关闭折叠 zM关闭所有折叠 zR打开所有折叠
 "zf是创建折叠，XXzf+ - 分别是对下面或者上面多少行进行这些
@@ -115,7 +116,7 @@ set pastetoggle=<leader>sp
 "让设置立即生效
 autocmd BufWritePost $MYVIMRC source $MYVIMRC 
 
-"vim自身命令只能补全
+"vim自身命令智能补全
 set wildmenu
 set showcmd "显示状态栏
 
