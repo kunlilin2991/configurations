@@ -52,6 +52,7 @@ export ZSH=$HOME/.oh-my-zsh
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+ 
 plugins=(git jump colored-man-pages command-not-found copydir cp)
 
 #对于上述插件的说明
@@ -140,6 +141,10 @@ alias vi="vim"
 alias vimR='vim -R' # 以只读模式打开vim 但是可以强制的修改
 alias vimM='vim -M' # 以只读模式打开vim 同时不能强制修改 也就是关闭了modify的功能
 alias vime='vim +' # 从文件的末尾开始打开文件，直接跳转到文件最后
+
+#将tmux缓冲区的内容复制到系统粘贴板，这样的好处在tmux选择东西，不用鼠标了，可以直接使用
+#使用方法是在tmux中使用C+B [进入到tmux的上下移动的文本模式，然后到要复制的地方，按空格进入选择模式，然后按回车将选择的文本进行复制，最后执行下面的命令tyy实现将选择的内容复制到系统粘贴板中。
+alias tyy='tmux show-buffer |xclip -selection clipboard'
 
 
 #添加默认启动tmux
