@@ -229,7 +229,7 @@ set helplang=cn
 
 
 " [YouCompleteMe][plugin](complete)
-let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/.ycm_extra_conf.py'
 
 " 不显示开启vim时检查ycm_extra_conf文件的信息  
 let g:ycm_confirm_extra_conf=0
@@ -251,8 +251,13 @@ let g:ycm_complete_in_strings = 1
 
 let g:ycm_add_preview_to_completeopt = 1
 let g:ycm_autoclose_preview_window_after_insertion = 1
+" 从第一个键入字符就开始罗列匹配项
+let g:ycm_min_num_of_chars_for_completion=1
 
 " 修改对C函数的补全快捷键，默认是CTRL + space，修改为ALT + ;
+" YCM 集成 OmniCppComplete 补全引擎，设置其快捷键
+inoremap <leader>; <C-x><C-o>
+
 let g:ycm_key_invoke_completion = '<M-;>'
 
 " 设置在下面几种格式的文件上屏蔽ycm
@@ -260,6 +265,13 @@ let g:ycm_filetype_blacklist = {
       \ 'tagbar' : 1,
       \ 'nerdtree' : 1,
       \}
+
+" 利用YCM实现函数定义的跳转
+nnoremap <leader>jc :YcmCompleter GoToDeclaration<CR>
+" 只能是 #include 或已打开的文件
+nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
+"
+
 " [YouCompleteMe]$
 
 
@@ -299,7 +311,7 @@ autocmd Syntax * RainbowParenthesesLoadBraces
 " [RainbowParentheses]$
 
 " [ctrlp](plugin)(file)
-"查找文件 在全部的文件系统中 而不是在文件中查找
+"查找文件 在全部的文件系统中 而不是在文件中查找 在新的窗口打开文件是Ctrl + t
 let g:ctrlp_map = '<leader>f'
 let g:ctrlp_match_window_reversed = 0
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
@@ -411,6 +423,8 @@ let GtagsCscope_Auto_Load = 1
 let CtagsCscope_Auto_Map = 1
 let GtagsCscope_Quiet = 1
 
-
+"[fencview] 
+"自动检查编码的的插件，使用方法是FencAutoDetect
+"[fencview]$
 
 
