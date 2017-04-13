@@ -114,7 +114,7 @@ set pastetoggle=<leader>sp
 
 
 "让设置立即生效
-autocmd BufWritePost $MYVIMRC source $MYVIMRC 
+" autocmd BufWritePost $MYVIMRC source $MYVIMRC
 
 "vim自身命令智能补全
 set wildmenu
@@ -157,6 +157,7 @@ Plugin 'scrooloose/nerdcommenter'       "快速注释
 Plugin 'aceofall/gtags.vim'       "
 Plugin  'honza/vim-snippets'        "与ultisnips组合的代码补全工具 使用的是这个工具中的引擎。其定义了各种操作
 Plugin 'mbbill/fencview'        "解决vim编码问题，例如打开txt乱码等问题。使用方法是命令行输入FencAutoDetect一般输入FencA就Tab就可以了
+Plugin 'vim-scripts/DrawIt' " ASCII art风格的注释格式 使用方法见下面具体配置
 
 
 call vundle#end()
@@ -164,26 +165,27 @@ filetype plugin indent on
 
 
 
-"fcitx.vim (plugin)
+"[fcitx.vim] (plugin) (effect)
 set ttimeoutlen=10
-"fcitx.vim $
+"[fcitx.vim] $
 
 
 "配色方案
 syntax enable
-"let g:solarized_termcolors=256
+" let g:solarized_termcolors=256
 set background=dark
 colorscheme solarized
 " colorscheme lucario
 " colorscheme molokai
 
 
-"[a.vim]<Plugin>
+"[a.vim](Plugin) (effect)
 "a.vim在头文件跟文件之间进行快速切换
 nmap <leader>a :A<CR>
+"[a.vim]$
 
 
-"[airline.vim] <Plugin>
+"[airline] (Plugin) (effect)
 "底部状态栏
  let g:airline_powerline_fonts = 1
  let g:airline_detect_modified=1
@@ -206,12 +208,16 @@ let g:airline_theme='base16_colors'
 ":Tmuxline aireline_visual 
 ":let g:airline#extensions#tmuxline#enabled = 0
 "set term=screen
+"[airline.vim] <Plugin> <effect>
 
-"[easymotion] <Plugin>
+
+"[easymotion.vim] <Plugin> <effect>
 "<leader><leader>w触发对world的easymotion，就是所有的字母前面变一个符号，输入相对应的符号就跳转到对应的单词处
 "<leader><leader>f触发查找命令，再输入一个字母就显示含有这个字母的地方
+"[easymotion.vim] <Plugin> <effect>
 
-"[the nerd tree]
+
+"[the nerd tree] (Plugin) (effect)
 "打开文件目录
 map <leader>n :NERDTreeToggle<CR>
 
@@ -219,16 +225,16 @@ let NERDTreeHighlightCursorline=1
 let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.obj$', '\.o$', '\.so$', '\.egg$', '^\.git$', '^\.svn$', '^\.hg$' ]
 " close vim if the only window left open is a NERDTree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | end
-"The-NERD-Tree $
+"[The-NERD-Tree] $
 
 
-"[vimcdoc]
+"[vimcdoc] (Plugin) (effect)
 "中文文档
 set helplang=cn
-"[vimcdoc]
+"[vimcdoc] $
 
 
-" [YouCompleteMe][plugin](complete)
+" [YouCompleteMe](plugin)(complete)(effect)
 let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/.ycm_extra_conf.py'
 
 " 不显示开启vim时检查ycm_extra_conf文件的信息  
@@ -270,12 +276,10 @@ let g:ycm_filetype_blacklist = {
 nnoremap <leader>jc :YcmCompleter GoToDeclaration<CR>
 " 只能是 #include 或已打开的文件
 nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
-"
-
 " [YouCompleteMe]$
 
 
-" [ultisnips](plugin)(efficiency)
+" [ultisnips](plugin)(effect)
 let g:UltiSnipsExpandTrigger = "<tab>"
 let g:UltiSnipsJumpForwardTrigger = "<C-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
@@ -283,7 +287,7 @@ let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 "[ultisnips] $
 
 
-" [RainbowParentheses](plugin)(color)
+" [RainbowParentheses](plugin)(color)(effect)
 " 给配对的括号着色
 let g:rbpt_colorpairs = [
     \ ['brown',       'RoyalBlue3'],
@@ -310,7 +314,8 @@ autocmd Syntax * RainbowParenthesesLoadSquare
 autocmd Syntax * RainbowParenthesesLoadBraces
 " [RainbowParentheses]$
 
-" [ctrlp](plugin)(file)
+
+" [ctrlp](plugin)(file)(effect)
 "查找文件 在全部的文件系统中 而不是在文件中查找 在新的窗口打开文件是Ctrl + t
 let g:ctrlp_map = '<leader>f'
 let g:ctrlp_match_window_reversed = 0
@@ -325,9 +330,10 @@ let g:ctrlp_open_multiple_files = 'v'
 " let g:indent_guides_start_level=2
 " let g:indent_guides_guide_size=1
 " let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
+" [vim-indent-guide] $
 
 
-" [syntastic](plugin)(syntax)
+" [syntastic](plugin)(syntax) (effect)
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
@@ -343,48 +349,49 @@ let g:syntastic_warning_symbol = '⚠'
 let g:syntastic_enable_balloons = 1
 " [syntastic]$
 
-"查函数结构体等声明
-"[tagbar](plugin)
+
+"[tagbar](plugin)(effect)
 nmap <leader>tb :TagbarToggle<CR>
+"查函数结构体等声明
 "[tagbar]$
 
 
-
-"[TaskList](plugin)
+"[TaskList](plugin)(effect)
 "快速定位到FIXME 和TUDO等，也可以自己定义，实现快速跳转
 nmap <leader>td <Plug>TaskList
 "[TaskList]$
 
 
-"对齐方式等
-"[EasyAlign](plugin)(efficiency)
+"[EasyAlign](plugin)(effect)
 vmap <Enter> <Plug>(EasyAlign)
+"对齐方式等
 "[EasyAlign]$
 
 
-
-"直接在vim中运行一个小程序，不需要声明等，就直接一个函数就可以了
-"[vim-quickrun](plugin)(efficiency)
+"[vim-quickrun](plugin)(effect)
 nmap <Leader>r <Plug>(quickrun)
 let g:quickrun_config = {}
 let g:quickrun_config.cpp = {
             \ 'type': 'cpp/clang++',
             \ 'cmdopt': '-std=c++1z -I ~/include'
             \}
+"直接在vim中运行一个小程序，不需要声明等，就直接一个函数就可以了
 "[vim-quickrun]$
-"
-"
-"git 修改情况
-"[gundo](plugin)
+
+
+"[gundo](plugin)(effect)
 nmap <leader>su :GndoToggle<CR>
+"git 修改情况
 "[gundo]$
 
-"[vim-sdcv]
+
+"[vim-sdcv](plugin)(effect)
 "vim-sdcv使用插件在vim中调用sdcv进行查询
 nmap <leader>fw :call SearchWord()<CR>
 "[vim-sdcv]$
 
-"[nerdcommenter]
+
+"[nerdcommenter](plugin)(effect)
 "快速注释内容
 "用法 
 " <leader>cc 快速注释当前行或者使用v选择的行
@@ -415,6 +422,8 @@ let g:NERDTrimTrailingWhitespace = 1
 
 "[nerdcommenter]$
 
+
+"[ctags](effect)
 " ctags 使用:cs find g XX可以查找对应的定义 在光标处 使用Ctrl+]查询定义
 " 使用Ctrl+t返回查询 需要在系统上安装global
 set cscopetag
@@ -422,9 +431,20 @@ set cscopeprg='gtags-cscope'
 let GtagsCscope_Auto_Load = 1
 let CtagsCscope_Auto_Map = 1
 let GtagsCscope_Quiet = 1
+"[ctags]$
 
-"[fencview] 
+
+"[fencview] (plugin)(effect)
 "自动检查编码的的插件，使用方法是FencAutoDetect
 "[fencview]$
 
 
+"[DrawIt](plugin)(effect)
+" 常用操作就两个，:Distart，开始绘制，可用方向键绘制线条，空格键绘制或擦除字符；:Distop，停止绘制。
+" 具体绘制的内容，如是加号还是什么要自己添加。
+" [DrawIt] $
+
+
+
+
+" end of vimrc
