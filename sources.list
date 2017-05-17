@@ -3,11 +3,13 @@
 # See http://help.ubuntu.com/community/UpgradeNotes for how to upgrade to
 # newer versions of the distribution.
 deb http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted
+deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial restricted universe main multiverse #Added by software-properties
 # deb-src http://cn.archive.ubuntu.com/ubuntu/ xenial main restricted
 
 ## Major bug fix updates produced after the final release of the
 ## distribution.
 deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted
+deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates restricted universe main multiverse #Added by software-properties
 # deb-src http://cn.archive.ubuntu.com/ubuntu/ xenial-updates main restricted
 
 ## N.B. software from this repository is ENTIRELY UNSUPPORTED by the Ubuntu
@@ -34,6 +36,7 @@ deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates multiverse
 ## Also, please note that software in backports WILL NOT receive any review
 ## or updates from the Ubuntu security team.
 deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse
+deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse #Added by software-properties
 # deb-src http://cn.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse
 
 ## Uncomment the following two lines to add software from Canonical's
@@ -44,6 +47,7 @@ deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-backports main restricted universe
 # deb-src http://archive.canonical.com/ubuntu xenial partner
 
 deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted
+deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-security restricted universe main multiverse #Added by software-properties
 # deb-src http://security.ubuntu.com/ubuntu xenial-security main restricted
 deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-security universe
 # deb-src http://security.ubuntu.com/ubuntu xenial-security universe
