@@ -86,6 +86,10 @@ export EDITOR='vim'
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
+
+
+# enble to operate all but one file.  e.g. mv *~tmp tmp
+setopt extended_glob
  
  
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
@@ -121,7 +125,7 @@ alias lam='ls -a --color=always |more'
 alias llt='ls -alhFt'    # 按照时间来排序 列出所有的文件
 alias lspwd='ls | sed "s:^:`pwd`/:"' # 列出文件的绝对路径
 alias lsf='ls -AF | grep /$'  # 只显示目录下的文件夹
-# alias lswc='ls|wc -l' # 统计目前文件夹下文件的多少
+alias lswc='ls|wc -l' # 统计目前文件夹下文件的多少
 alias cdf='cd $(dirname $(find ' # 后面是find命令 需要最后加两个括号
 alias ctf='ls -l | grep "^-" | wc -l' #统计当前文件夹下文件的个数
 alias ctd='ls -l| grep "^d" | wc -l'  #统计当前文件夹下文件夹的个数
@@ -129,7 +133,7 @@ alias ctfa='ls -lR| grep "^-" | wc -l'  #统计当前文件夹下文件的个数
 
 
 alias cls='clear'
-alias nautilusd='nautilus ./'
+alias nautilusd='nautilus ./ &'
 alias psU='ps -U root -u root u'       #显示以root用户运行的程序
 alias psA='ps -A'       #显示所有运行的进程
 alias cpi='cp -i'        #询问是否覆盖同名文件
