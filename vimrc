@@ -147,14 +147,14 @@ Plugin 'Sirver/ultisnips'       "智能补全，输入提示
 Plugin 'kien/ctrlp.vim'     "查找文件 在全部的文件系统中 而不是在文件中查找
 " Plugin 'nathanaelkane/vim-indent-guides'    "可视的显示缩进
 Plugin 'scrooloose/syntastic'    "显示错误信息
-Plugin 'majutsushi/tagbar'      "查看结构体
+Plugin 'majutsushi/tagbar'      "查看结构体自定义快捷键是leader tb
 Plugin 'vim-scripts/TaskList.vim'       "通过fixme tudo等去快速跳转
 Plugin 'junegunn/vim-easy-align'        "各种缩进等
 Plugin 'thinca/vim-quickrun'            "在vim中直接运行一个小程序
 Plugin 'sjl/gundo.vim'              "类似与git的功能，本地的版本控制
 Plugin 'chusiang/vim-sdcv'          "在vim中使用sdcv
 Plugin 'scrooloose/nerdcommenter'       "快速注释
-Plugin 'aceofall/gtags.vim'       "
+Plugin 'aceofall/gtags.vim'       "快速生成标签，用于代码跳转
 Plugin  'honza/vim-snippets'        "与ultisnips组合的代码补全工具 使用的是这个工具中的引擎。其定义了各种操作
 Plugin 'mbbill/fencview'        "解决vim编码问题，例如打开txt乱码等问题。使用方法是命令行输入FencAutoDetect一般输入FencA就Tab就可以了
 Plugin 'vim-scripts/DrawIt' " ASCII art风格的注释格式 使用方法见下面具体配置
@@ -309,22 +309,49 @@ let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 
 " [RainbowParentheses](plugin)(color)(effect)
 " 给配对的括号着色
-let g:rbpt_colorpairs = [
-    \ ['brown',       'RoyalBlue3'],
-    \ ['Darkblue',    'SeaGreen3'],
-    \ ['darkgray',    'DarkOrchid3'],
-    \ ['darkgreen',   'firebrick3'],
-    \ ['darkcyan',    'RoyalBlue3'],
-    \ ['darkred',     'SeaGreen3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['brown',       'firebrick3'],
-    \ ['gray',        'RoyalBlue3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['Darkblue',    'firebrick3'],
-    \ ['darkgreen',   'RoyalBlue3'],
-    \ ['darkcyan',    'SeaGreen3'],
-    \ ['darkred',     'DarkOrchid3'],
-    \ ['red',         'firebrick3'],
+let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
+
+"setting from the offical introduction 
+	let g:rainbow_conf = {
+	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
+	\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
+	\	'operators': '_,_',
+	\	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
+	\	'separately': {
+	\		'*': {},
+	\		'tex': {
+	\			'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/'],
+	\		},
+	\		'lisp': {
+	\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
+	\		},
+	\		'vim': {
+	\			'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
+	\		},
+	\		'html': {
+	\			'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
+	\		},
+	\		'css': 0,
+	\	}
+	\}
+
+"original setting for rainbow 
+" let g:rbpt_colorpairs = [
+"     \ ['brown',       'RoyalBlue3'],
+"     \ ['Darkblue',    'SeaGreen3'],
+"     \ ['darkgray',    'DarkOrchid3'],
+"     \ ['darkgreen',   'firebrick3'],
+"     \ ['darkcyan',    'RoyalBlue3'],
+"     \ ['darkred',     'SeaGreen3'],
+"     \ ['darkmagenta', 'DarkOrchid3'],
+"     \ ['brown',       'firebrick3'],
+"     \ ['gray',        'RoyalBlue3'],
+"     \ ['darkmagenta', 'DarkOrchid3'],
+"     \ ['Darkblue',    'firebrick3'],
+"     \ ['darkgreen',   'RoyalBlue3'],
+"     \ ['darkcyan',    'SeaGreen3'],
+"     \ ['darkred',     'DarkOrchid3'],
+"     \ ['red',         'firebrick3'],
     \ ]
 let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
@@ -443,9 +470,10 @@ let g:NERDTrimTrailingWhitespace = 1
 "[nerdcommenter]$
 
 
-"[ctags](effect)
-" ctags 使用:cs find g XX可以查找对应的定义 在光标处 使用Ctrl+]查询定义
+"[gtags](effect)
+" gtags 使用:cs find g XX可以查找对应的定义 在光标处 使用Ctrl+]查询定义
 " 使用Ctrl+t返回查询 需要在系统上安装global
+" global -c sds 查询以sds开头的变量
 set cscopetag
 set cscopeprg='gtags-cscope'
 let GtagsCscope_Auto_Load = 1
