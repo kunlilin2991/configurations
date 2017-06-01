@@ -133,7 +133,7 @@ alias ctfa='ls -lR| grep "^-" | wc -l'  #统计当前文件夹下文件的个数
 
 
 alias cls='clear'
-alias nautilusd='nautilus ./ &'
+alias nautilusd='nautilus ./ 2&>1 1&>/dev/null &'
 alias psU='ps -U root -u root u'       #显示以root用户运行的程序
 alias psA='ps -A'       #显示所有运行的进程
 alias cpi='cp -i'        #询问是否覆盖同名文件

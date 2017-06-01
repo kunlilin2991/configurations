@@ -47,11 +47,11 @@ set expandtab
 
 "在不同的窗口之间进行切换
 "依次遍历 左 右 下 上的窗口
-nnoremap nw <C-W><C-W>
-nnoremap <Leader>lw <C-W>l
-nnoremap <Leader>rw <C-W>h
-nnoremap <Leader>jw <C-W>j
-nnoremap <Leader>kw <C-W>k
+nnoremap wn <C-W><C-W>
+nnoremap <Leader>wl <C-W>l
+nnoremap <Leader>wr <C-W>h
+nnoremap <Leader>wj <C-W>j
+nnoremap <Leader>wk <C-W>k
 
 "对于搜索的一些设置
 set hlsearch "high light search
@@ -158,6 +158,7 @@ Plugin 'aceofall/gtags.vim'       "快速生成标签，用于代码跳转
 Plugin  'honza/vim-snippets'        "与ultisnips组合的代码补全工具 使用的是这个工具中的引擎。其定义了各种操作
 Plugin 'mbbill/fencview'        "解决vim编码问题，例如打开txt乱码等问题。使用方法是命令行输入FencAutoDetect一般输入FencA就Tab就可以了
 Plugin 'vim-scripts/DrawIt' " ASCII art风格的注释格式 使用方法见下面具体配置
+Plugin 'lervag/vimtex'        " latex for vim plugin
 
 
 call vundle#end()
