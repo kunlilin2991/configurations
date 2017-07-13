@@ -126,6 +126,7 @@ alias llt='ls -alhFt'    # 按照时间来排序 列出所有的文件
 alias lspwd='ls | sed "s:^:`pwd`/:"' # 列出文件的绝对路径
 alias lsf='ls -AF | grep /$'  # 只显示目录下的文件夹
 alias lswc='ls|wc -l' # 统计目前文件夹下文件的多少
+
 alias cdf='cd $(dirname $(find ' # 后面是find命令 需要最后加两个括号
 alias ctf='ls -l | grep "^-" | wc -l' #统计当前文件夹下文件的个数
 alias ctd='ls -l| grep "^d" | wc -l'  #统计当前文件夹下文件夹的个数
@@ -133,7 +134,7 @@ alias ctfa='ls -lR| grep "^-" | wc -l'  #统计当前文件夹下文件的个数
 
 
 alias cls='clear'
-alias nautilusd='nautilus ./ 2&>1 1&>/dev/null &'
+alias nautilusd='nautilus ./ >/dev/null 2>&1 &'
 alias psU='ps -U root -u root u'       #显示以root用户运行的程序
 alias psA='ps -A'       #显示所有运行的进程
 alias cpi='cp -i'        #询问是否覆盖同名文件
@@ -155,6 +156,7 @@ alias vime='vim +' # 从文件的末尾开始打开文件，直接跳转到文�
 #将tmux缓冲区的内容复制到系统粘贴板，这样的好处在tmux选择东西，不用鼠标了，可以直接使用
 #使用方法是在tmux中使用C+B [进入到tmux的上下移动的文本模式，然后到要复制的地方，按空格进入选择模式，然后按回车将选择的文本进行复制，最后执行下面的命令tyy实现将选择的内容复制到系统粘贴板中。
 alias tyy='tmux show-buffer |xclip -selection clipboard'
+alias cpdir='copydir'
 
 #添加默认启动tmux
 # If not running interactively, do not do anything
