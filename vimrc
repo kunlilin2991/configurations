@@ -18,13 +18,13 @@ map <leader>y "+y
 map <leader>p "+p
 
 "定义快捷键关闭当前分割的窗口
-nmap <Leader>q :q<CR>
+nmap <Leader>Q :q<CR>
 "保存操作
 nmap <Leader>w :w<CR>
 "保存退出
 nmap <Leader>wq :wa<CR>:q<CR>
 "不保存退出
-nmap <Leader>Q :q!<CR>
+" nmap <Leader>Q :q!<CR>
 "编辑特权文件的时候，不用sudo vim就可以直接保存
 nmap <leader>W :w !sudo tee % > /dev/null<CR>
 
@@ -62,6 +62,7 @@ syntax on "用另外一种颜色显示搜索结果
 set showmatch "在成对的符号之间跳转
 nmap <leader>/ :let @/=""<CR>   "清除缓冲区
 nmap <leader>. :<UP><CR>    "重复上一个命令
+nmap <leader>m %        "在结对符之间跳转
 
 "语法高亮
 syntax enable
@@ -111,6 +112,8 @@ set foldmethod=manual       "手动的折叠
 nnoremap <leader>sp :set invpaste paste?<CR>
 set pastetoggle=<leader>sp
 
+"允许鼠标
+" set mouse=a
 
 
 "让设置立即生效
@@ -119,6 +122,10 @@ set pastetoggle=<leader>sp
 "vim自身命令智能补全
 set wildmenu
 set showcmd "显示状态栏
+
+"设置ctags自动向上寻找ctags的文件。否则只能在ctags的生成路径下打开文件
+set tags=./tags;,tags
+set autochdir
 
 
 "插件管理
@@ -158,7 +165,12 @@ Plugin 'aceofall/gtags.vim'       "快速生成标签，用于代码跳转
 Plugin  'honza/vim-snippets'        "与ultisnips组合的代码补全工具 使用的是这个工具中的引擎。其定义了各种操作
 Plugin 'mbbill/fencview'        "解决vim编码问题，例如打开txt乱码等问题。使用方法是命令行输入FencAutoDetect一般输入FencA就Tab就可以了
 Plugin 'vim-scripts/DrawIt' " ASCII art风格的注释格式 使用方法见下面具体配置
+Plugin 'derekwyatt/vim-fswitch' "实现在头文件声明和定义再见跳转
+Plugin 'vim-scripts/DfrankUtil' "实现周期性的更新ctags
+Plugin 'vim-scripts/vimprj'     "实现周期性的更新ctags 上面的这两个是前提条件，真正的实现是下面的这个
+Plugin 'vim-scripts/indexer.tar.gz' "周期性的更新ctags文件，依赖上面的两个文件
 Plugin 'lervag/vimtex'        " latex for vim plugin
+Plugin 'xuhdev/vim-latex-live-preview' "实时输出vim编写的LaTeX的文档的效果
 
 
 call vundle#end()
@@ -193,14 +205,11 @@ nmap <leader>a :A<CR>
  let g:airline_detect_iminsert=1
  let g:airline_detect_paste=1
  let g:airline#extensions#whitespace#show_message = 0 " 不显示末尾空行
+ let g:airline_section_c = '%t'     "只显示文件名，不显示路径
 " 在同一个vim使用buffer打开多个文件设置
- let g:airline#extensions#tabline#enabled = 1 " 显增加buffer ，在同一个窗口打开多个vim
- " let g:airline#extensions#bufferline#enabled = 1
- "  let g:airline#extensions#tabline#switch_buffers_and_tabs = 1
- " let g:airline_left_sep = '»'
- " let g:airline_right_sep = '«'
- let g:airline_left_sep = '>'
- let g:airline_right_sep = '<'
+let g:airline#extensions#tabline#enabled = 1 " 显增加buffer ，在同一个窗口打开多个vim
+let g:airline_left_sep = '>'
+let g:airline_right_sep = '<'
 nnoremap [b :bp<CR>
 nnoremap ]b :bn<CR>
 let g:airline#extensions#tabline#buffer_idx_mode = 1
@@ -216,19 +225,10 @@ nmap <leader>9 <Plug>AirlineSelectTab9
 " let g:airline_section_gutter='%{getcwd()}'
 "let g:airline_section_error = '%{strftime("%c")}'   "显示时间
 "let g:airline_colorscheme='solarized_light'
-"let g:airline_section_z = 'BN: %{bufnr("%")}'
-"
+" let g:airline_section_z = 'BN: %{bufnr("%")}'
+
 "airline主题，在对应文件夹里边有很多 对应查找
 let g:airline_theme='base16_colors'
-
-
-"Tmuxline 底部状态栏但是必须运行在tmux中
-"tmuxline.vim <Plugin>
-":Tmuxline vim_statusline_2
-":Tmuxline airline 
-":Tmuxline aireline_visual 
-":let g:airline#extensions#tmuxline#enabled = 0
-"set term=screen
 "[airline.vim] <Plugin> <effect>
 
 
@@ -400,6 +400,48 @@ let g:syntastic_enable_balloons = 1
 
 "[tagbar](plugin)(effect)
 nmap <leader>tb :TagbarToggle<CR>
+" 设置 tagbar 子窗口的位置出现在主编辑区的左边 
+" let tagbar_left=1
+" 设置显示／隐藏标签列表子窗口的快捷键。速记：identifier list by tag
+" nnoremap <Leader>ilt :TagbarToggle<CR>
+" 设置标签子窗口的宽度 
+let tagbar_width=32 
+" tagbar 子窗口中不显示冗余帮助信息 
+let g:tagbar_compact=1
+" 设置 ctags 对哪些代码标识符生成标签
+let g:tagbar_type_cpp = {
+    \ 'kinds' : [
+         \ 'c:classes:0:1',
+         \ 'd:macros:0:1',
+         \ 'e:enumerators:0:0', 
+         \ 'f:functions:0:1',
+         \ 'g:enumeration:0:1',
+         \ 'l:local:0:1',
+         \ 'm:members:0:1',
+         \ 'n:namespaces:0:1',
+         \ 'p:functions_prototypes:0:1',
+         \ 's:structs:0:1',
+         \ 't:typedefs:0:1',
+         \ 'u:unions:0:1',
+         \ 'v:global:0:1',
+         \ 'x:external:0:1'
+     \ ],
+     \ 'sro'        : '::',
+     \ 'kind2scope' : {
+         \ 'g' : 'enum',
+         \ 'n' : 'namespace',
+         \ 'c' : 'class',
+         \ 's' : 'struct',
+         \ 'u' : 'union'
+     \ },
+     \ 'scope2kind' : {
+         \ 'enum'      : 'g',
+         \ 'namespace' : 'n',
+         \ 'class'     : 'c',
+         \ 'struct'    : 's',
+         \ 'union'     : 'u'
+     \ }
+\ }
 "查函数结构体等声明
 "[tagbar]$
 
@@ -448,26 +490,19 @@ nmap <leader>fw :call SearchWord()<CR>
 "<leader>cA 在行尾添加一个注释符，并跳转到注释的地方 
 "add spaces after comment delimiters by default 在注释符号之后加一个空格
 let g:NERDSpaceDelims = 1
-
 " Use compact syntax for prettified multi-line comments
 let g:NERDCompactSexyComs = 1
-
 " Align line-wise comment delimiters flush left instead of following code
 " indentation
 let g:NERDDefaultAlign = 'left'
-
 " Set a language to use its alternate delimiters by default
 let g:NERDAltDelims_java = 1
-
 " Add your own custom formats or override the defaults
 let g:NERDCustomDelimiters = { 'c': { 'left': '/**','right': '*/' } }
-
 " Allow commenting and inverting empty lines (useful when commenting a region)
 let g:NERDCommentEmptyLines = 1
-
 " Enable trimming of trailing whitespace when uncommenting
 let g:NERDTrimTrailingWhitespace = 1
-
 "[nerdcommenter]$
 
 
@@ -492,6 +527,32 @@ let GtagsCscope_Quiet = 1
 " 常用操作就两个，:Distart，开始绘制，可用方向键绘制线条，空格键绘制或擦除字符；:Distop，停止绘制。
 " 具体绘制的内容，如是加号还是什么要自己添加。
 " [DrawIt] $
+
+
+"[vim-fswitch] (plugin)(effect)
+"实现在类的声明和定义之间的跳转，例如类的声明在myclass.h定义在myclsss.cpp中，则可以通过这个时间快速跳转
+nmap <silent> <Leader>sw :FSHere<cr>
+"[vim-fswitch]$
+
+
+"[indexer.tar.gz] (plugin) (effect)
+" 设置插件 indexer 调用 ctags 的参数
+" 默认 --c++-kinds=+p+l，重新设置为 --c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v
+" 默认 --fields=+iaS 不满足 YCM 要求，需改为 --fields=+iaSl
+let g:indexer_ctagsCommandLineOptions="--c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v --fields=+iaSl --extra=+q"
+"[indexer.tar.gz] $
+
+
+"[vimtex] (Plugin)(effect)
+"for usage tyep :h vimtex
+"[vimtex] $
+
+
+"[vim-latex-live-preview] (Plugin)(ineffect)
+"LLPStartPreview is not an editor command (problem)
+" let g:livepreview_previewer = 'apvlv'
+nmap <F12> :LLPStartPreview<cr>
+"[vim-latex-live-preview]$
 
 
 

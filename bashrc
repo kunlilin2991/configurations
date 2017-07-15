@@ -149,8 +149,8 @@ fi
 
 #添加默认启动tmux
 # If not running interactively, do not do anything
-[[ $- != *i* ]] && return
-[[ -z "$TMUX" ]] && exec tmux
+# [[ $- != *i* ]] && return
+# [[ -z "$TMUX" ]] && exec tmux
 
 # add cheat for bash following instruction on website
 
