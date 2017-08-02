@@ -169,7 +169,7 @@ Plugin 'derekwyatt/vim-fswitch' "实现在头文件声明和定义再见跳转
 Plugin 'vim-scripts/DfrankUtil' "实现周期性的更新ctags
 Plugin 'vim-scripts/vimprj'     "实现周期性的更新ctags 上面的这两个是前提条件，真正的实现是下面的这个
 Plugin 'vim-scripts/indexer.tar.gz' "周期性的更新ctags文件，依赖上面的两个文件
-Plugin 'lervag/vimtex'        " latex for vim plugin
+" Plugin 'lervag/vimtex'        " latex for vim plugin
 Plugin 'xuhdev/vim-latex-live-preview' "实时输出vim编写的LaTeX的文档的效果
 
 
@@ -256,6 +256,7 @@ set helplang=cn
 
 
 " [YouCompleteMe](plugin)(complete)(effect)
+" 添加配置文件，这里是网上的添加了C++的文件的py文件。这个文件在下载的ycm中没有，需要自己去配置，当前文件下载于https://github.com/JDevlieghere/dotfiles/blob/master/.vim/.ycm_extra_conf.py
 let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/.ycm_extra_conf.py'
 
 " 不显示开启vim时检查ycm_extra_conf文件的信息  
@@ -448,6 +449,8 @@ let g:tagbar_type_cpp = {
 
 "[TaskList](plugin)(effect)
 "快速定位到FIXME 和TUDO等，也可以自己定义，实现快速跳转
+let g:tlTokenList = ["FIXME", "TODO", "HACK", "NOTE", "WARN", "MODIFY"]
+let g:tlWindowPosition = 1
 nmap <leader>td <Plug>TaskList
 "[TaskList]$
 
