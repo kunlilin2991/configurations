@@ -165,6 +165,13 @@ alias cpdir='copydir'
 
 export TERM="xterm-256color"
 
+#function define
+#使用foxit打开pdf文件，但是不将软件的信息输出到terminal上。
+foxpdf()
+{
+   FoxitReader $1 >/dev/null 2>&1 
+}
+
 
 #end of zshrc
 #
