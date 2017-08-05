@@ -172,6 +172,20 @@ foxpdf()
    FoxitReader $1 >/dev/null 2>&1 
 }
 
+#简化git的命令
+gpush()
+{
+    git push origin master
+}
+gpull()
+{
+    git pull origin master
+}
+
+#简化find命令
+lfind(){
+    find ./ -iname "$1"
+}
 
 #end of zshrc
 #
