@@ -100,7 +100,7 @@ setopt extended_glob
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-# 
+#
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -112,6 +112,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
+
 
 # my own alias
 alias ll='ls -alhF'
@@ -148,7 +149,7 @@ alias dic='sdcv'
 alias pdf='apvlv'        # 使用vim风格的pdf阅读器
 
 #some alias for vim
-alias vi="vim"
+#alias vi="vim"
 alias vimR='vim -R' # 以只读模式打开vim 但是可以强制的修改
 alias vimM='vim -M' # 以只读模式打开vim 同时不能强制修改 也就是关闭了modify的功能
 alias vime='vim +' # 从文件的末尾开始打开文件，直接跳转到文件最后
@@ -164,6 +165,9 @@ alias cpdir='copydir'
 [[ -z "$TMUX" ]] && exec tmux
 
 export TERM="xterm-256color"
+
+#ls 配色
+eval `dircolors $HOME/.dircolors/dircolors.ansi-universal`
 
 #function define
 #使用foxit打开pdf文件，但是不将软件的信息输出到terminal上。
