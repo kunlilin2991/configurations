@@ -149,6 +149,7 @@ Plugin 'easymotion/vim-easymotion'      "类似于vimium中的F键的功能
 Plugin 'vim-scripts/The-NERD-tree'      "打开文件所在路径的文件树
 Plugin 'asins/vimcdoc'      "vim中文帮助文档
 Plugin 'Valloric/YouCompleteMe'         "智能补全
+Plugin 'rdnetto/YCM-Generator'  "自动为YoucompleteMe生成.ycm_extra_conf.py文件
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'Sirver/ultisnips'       "智能补全，输入提示
 Plugin 'kien/ctrlp.vim'     "查找文件 在全部的文件系统中 而不是在文件中查找
@@ -161,16 +162,18 @@ Plugin 'thinca/vim-quickrun'            "在vim中直接运行一个小程序
 Plugin 'sjl/gundo.vim'              "类似与git的功能，本地的版本控制
 Plugin 'chusiang/vim-sdcv'          "在vim中使用sdcv
 Plugin 'scrooloose/nerdcommenter'       "快速注释
-Plugin 'aceofall/gtags.vim'       "快速生成标签，用于代码跳转
 Plugin  'honza/vim-snippets'        "与ultisnips组合的代码补全工具 使用的是这个工具中的引擎。其定义了各种操作
 Plugin 'mbbill/fencview'        "解决vim编码问题，例如打开txt乱码等问题。使用方法是命令行输入FencAutoDetect一般输入FencA就Tab就可以了
 Plugin 'vim-scripts/DrawIt' " ASCII art风格的注释格式 使用方法见下面具体配置
 Plugin 'derekwyatt/vim-fswitch' "实现在头文件声明和定义再见跳转
+Plugin 'vim-scripts/gtags.vim'  "gtags
 Plugin 'vim-scripts/DfrankUtil' "实现周期性的更新ctags
 Plugin 'vim-scripts/vimprj'     "实现周期性的更新ctags 上面的这两个是前提条件，真正的实现是下面的这个
 Plugin 'vim-scripts/indexer.tar.gz' "周期性的更新ctags文件，依赖上面的两个文件
+Plugin 'octol/vim-cpp-enhanced-highlight'   "C++ syntax highlight
 " Plugin 'lervag/vimtex'        " latex for vim plugin
-Plugin 'xuhdev/vim-latex-live-preview' "实时输出vim编写的LaTeX的文档的效果
+" Plugin 'xuhdev/vim-latex-live-preview' "实时输出vim编写的LaTeX的文档的效果
+" 
 
 
 call vundle#end()
@@ -255,6 +258,16 @@ set helplang=cn
 "[vimcdoc] $
 
 
+"[vim-cpp-enhanced-highlight] (Plugin) (effect)
+let g:cpp_class_scope_highlight = 1 "highlight class scope 
+let g:cpp_member_variable_highlight = 1  "Highlighting of member variables 
+let g:cpp_class_decl_highlight = 1   "Highlighting of class names in declarations
+let g:cpp_experimental_simple_template_highlight = 1    "hightlight template functions
+" let g:cpp_experimental_simple_template_highlight = 1    "hightlight template functions quick but error in some templete, only one is actived
+let g:cpp_no_function_highlight = 1     "Highlighting of user defined functions
+"[vim-cpp-enhanced-highlight]$
+
+
 " [YouCompleteMe](plugin)(complete)(effect)
 " 添加配置文件，这里是网上的添加了C++的文件的py文件。这个文件在下载的ycm中没有，需要自己去配置，当前文件下载于https://github.com/JDevlieghere/dotfiles/blob/master/.vim/.ycm_extra_conf.py
 let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/.ycm_extra_conf.py'
@@ -299,6 +312,13 @@ nnoremap <leader>jc :YcmCompleter GoToDeclaration<CR>
 " 只能是 #include 或已打开的文件
 nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
 " [YouCompleteMe]$
+
+
+" [YCM-Generator] (Plugin) (effect)
+" nnoremap <leader>gcm :YcmGenerateConfig<CR> "在当前目录生成.ycm_extra_conf.py
+" 在.vim/bundle/YCM-Generator目录下运行./genarator.py + build
+" directory就可以生成对应的目录
+" [YCM-Generator] $
 
 
 " [ultisnips](plugin)(effect)
@@ -401,6 +421,8 @@ let g:syntastic_enable_balloons = 1
 
 "[tagbar](plugin)(effect)
 nmap <leader>tb :TagbarToggle<CR>
+"启动的时候，自动focus
+let g:tagbar_autofocus = 1
 " 设置 tagbar 子窗口的位置出现在主编辑区的左边 
 " let tagbar_left=1
 " 设置显示／隐藏标签列表子窗口的快捷键。速记：identifier list by tag
@@ -509,7 +531,7 @@ let g:NERDTrimTrailingWhitespace = 1
 "[nerdcommenter]$
 
 
-"[gtags](effect)
+"[gtags](Plugin) (ineffect)
 " gtags 使用:cs find g XX可以查找对应的定义 在光标处 使用Ctrl+]查询定义
 " 使用Ctrl+t返回查询 需要在系统上安装global
 " global -c sds 查询以sds开头的变量
@@ -518,7 +540,7 @@ set cscopeprg='gtags-cscope'
 let GtagsCscope_Auto_Load = 1
 let CtagsCscope_Auto_Map = 1
 let GtagsCscope_Quiet = 1
-"[ctags]$
+"[tags]$
 
 
 "[fencview] (plugin)(effect)
@@ -546,7 +568,7 @@ let g:indexer_ctagsCommandLineOptions="--c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v 
 "[indexer.tar.gz] $
 
 
-"[vimtex] (Plugin)(effect)
+"[vimtex] (Plugin) (ineffect)
 "for usage tyep :h vimtex
 "[vimtex] $
 
@@ -554,7 +576,7 @@ let g:indexer_ctagsCommandLineOptions="--c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v 
 "[vim-latex-live-preview] (Plugin)(ineffect)
 "LLPStartPreview is not an editor command (problem)
 " let g:livepreview_previewer = 'apvlv'
-nmap <F12> :LLPStartPreview<cr>
+"nmap <F12> :LLPStartPreview<cr>
 "[vim-latex-live-preview]$
 
 
