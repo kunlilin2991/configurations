@@ -28,6 +28,9 @@ nmap <Leader>wq :wa<CR>:q<CR>
 "编辑特权文件的时候，不用sudo vim就可以直接保存
 nmap <leader>W :w !sudo tee % > /dev/null<CR>
 
+"关闭当前的缓冲区页
+nmap <leader>qq :bd<CR>
+
 "设置快捷键遍历子窗口
 "一次遍
 
@@ -113,7 +116,7 @@ nnoremap <leader>sp :set invpaste paste?<CR>
 set pastetoggle=<leader>sp
 
 "允许鼠标
-" set mouse=a
+set mouse=a
 
 
 "让设置立即生效
@@ -138,9 +141,10 @@ call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'vim-scripts/fcitx.vim'      "状态跟编辑时输入法单独设置
-Plugin 'altercation/vim-colors-solarized'   "solarized配色方案
+" Plugin 'altercation/vim-colors-solarized'   "solarized配色方案
 Plugin 'raphamorim/lucario'                 "lucario配色方案
-Plugin 'tomasr/molokai'     "molokai配色方案
+" Plugin 'tomasr/molokai'     "molokai配色方案
+Plugin 'flazz/vim-colorschemes'   "使用一个插件管理所有的配色方案。
 Plugin 'vim-scripts/a.vim'      "在头文件跟文件之间进行切换
 Plugin 'vim-airline/vim-airline'        "底部状态栏
 Plugin 'vim-airline/vim-airline-themes'     "airline的主题
@@ -187,13 +191,13 @@ set ttimeoutlen=10
 
 
 "配色方案
+"[vim-colorschemes](Plugin) (effect)
 syntax enable
 " let g:solarized_termcolors=256
 set background=dark
 colorscheme solarized
 " colorscheme lucario
 " colorscheme molokai
-
 
 "[a.vim](Plugin) (effect)
 "a.vim在头文件跟文件之间进行快速切换
@@ -211,6 +215,7 @@ nmap <leader>a :A<CR>
  let g:airline_section_c = '%t'     "只显示文件名，不显示路径
 " 在同一个vim使用buffer打开多个文件设置
 let g:airline#extensions#tabline#enabled = 1 " 显增加buffer ，在同一个窗口打开多个vim
+set hidden "避免必须保存修改才能跳转buffer
 let g:airline_left_sep = '>'
 let g:airline_right_sep = '<'
 nnoremap [b :bp<CR>
@@ -264,7 +269,7 @@ let g:cpp_member_variable_highlight = 1  "Highlighting of member variables
 let g:cpp_class_decl_highlight = 1   "Highlighting of class names in declarations
 let g:cpp_experimental_simple_template_highlight = 1    "hightlight template functions
 " let g:cpp_experimental_simple_template_highlight = 1    "hightlight template functions quick but error in some templete, only one is actived
-let g:cpp_no_function_highlight = 1     "Highlighting of user defined functions
+" let g:cpp_no_function_highlight = 1     "Highlighting of user defined functions is disabled by this setting
 "[vim-cpp-enhanced-highlight]$
 
 
@@ -568,17 +573,15 @@ let g:indexer_ctagsCommandLineOptions="--c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v 
 "[indexer.tar.gz] $
 
 
+"[tabular] (Plugin) (effect)
+"<leader>a= 对=进行对齐
+"<leader>a, 对，进行对齐
+"[tabular] $
+
+
 "[vimtex] (Plugin) (ineffect)
 "for usage tyep :h vimtex
 "[vimtex] $
-
-
-"[vim-latex-live-preview] (Plugin)(ineffect)
-"LLPStartPreview is not an editor command (problem)
-" let g:livepreview_previewer = 'apvlv'
-"nmap <F12> :LLPStartPreview<cr>
-"[vim-latex-live-preview]$
-
 
 
 

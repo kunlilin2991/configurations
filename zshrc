@@ -159,6 +159,9 @@ alias vime='vim +' # 从文件的末尾开始打开文件，直接跳转到文�
 alias tyy='tmux show-buffer |xclip -selection clipboard'
 alias cpdir='copydir'
 
+alias z='jump'  # jump is a plugin and z is also a plugin for zsh, fake z to be jump
+
+
 #添加默认启动tmux
 # If not running interactively, do not do anything
 [[ $- != *i* ]] && return
@@ -191,6 +194,8 @@ masterpdf()
     masterpdfeditor4 $1 > /dev/null 2>&1 
 }
 
-#end of zshrc
-#
 
+ 
+ 
+ 
+#end of zshrc
