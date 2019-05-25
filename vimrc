@@ -18,7 +18,7 @@ map <leader>y "+y
 map <leader>p "+p
 
 "定义快捷键关闭当前分割的窗口
-nmap <Leader>Q :q<CR>
+" nmap <Leader>Q :q<CR>
 "保存操作
 nmap <Leader>w :w<CR>
 "保存退出
@@ -29,7 +29,7 @@ nmap <Leader>wq :wa<CR>:q<CR>
 nmap <leader>W :w !sudo tee % > /dev/null<CR>
 
 "关闭当前的缓冲区页
-nmap <leader>qq :bd<CR>
+nmap <leader>Q :bd<CR>
 
 "设置快捷键遍历子窗口
 "一次遍
@@ -46,6 +46,10 @@ set smarttab
 set tabstop=4   "tab in file
 set softtabstop=4   "tab inserted
 set expandtab
+
+
+"设置拼写检查的语言
+set spelllang=en_us
 
 
 "在不同的窗口之间进行切换
@@ -127,7 +131,7 @@ set wildmenu
 set showcmd "显示状态栏
 
 "设置ctags自动向上寻找ctags的文件。否则只能在ctags的生成路径下打开文件
-set tags=./tags;,tags
+set tags=./.tags;,.tags
 set autochdir
 
 
@@ -154,11 +158,13 @@ Plugin 'vim-scripts/The-NERD-tree'      "打开文件所在路径的文件树
 Plugin 'asins/vimcdoc'      "vim中文帮助文档
 Plugin 'Valloric/YouCompleteMe'         "智能补全
 Plugin 'rdnetto/YCM-Generator'  "自动为YoucompleteMe生成.ycm_extra_conf.py文件
-Plugin 'kien/rainbow_parentheses.vim'
+" Plugin 'kien/rainbow_parentheses.vim' "括号等的配对颜色
+Plugin 'luochen1990/rainbow'    "括号等的配对颜色
 Plugin 'Sirver/ultisnips'       "智能补全，输入提示
 Plugin 'kien/ctrlp.vim'     "查找文件 在全部的文件系统中 而不是在文件中查找
 " Plugin 'nathanaelkane/vim-indent-guides'    "可视的显示缩进
-Plugin 'scrooloose/syntastic'    "显示错误信息
+" Plugin 'scrooloose/syntastic'    "显示错误信息
+Plugin 'w0rp/ale'   "新的错误信息
 Plugin 'majutsushi/tagbar'      "查看结构体自定义快捷键是leader tb
 Plugin 'vim-scripts/TaskList.vim'       "通过fixme tudo等去快速跳转
 Plugin 'junegunn/vim-easy-align'        "各种缩进等
@@ -171,12 +177,14 @@ Plugin 'mbbill/fencview'        "解决vim编码问题，例如打开txt乱码�
 Plugin 'vim-scripts/DrawIt' " ASCII art风格的注释格式 使用方法见下面具体配置
 Plugin 'derekwyatt/vim-fswitch' "实现在头文件声明和定义再见跳转
 Plugin 'vim-scripts/gtags.vim'  "gtags
+Plugin 'ludovicchabant/vim-gutentags'  "manages your tag files
 Plugin 'vim-scripts/DfrankUtil' "实现周期性的更新ctags
 Plugin 'vim-scripts/vimprj'     "实现周期性的更新ctags 上面的这两个是前提条件，真正的实现是下面的这个
 Plugin 'vim-scripts/indexer.tar.gz' "周期性的更新ctags文件，依赖上面的两个文件
 Plugin 'octol/vim-cpp-enhanced-highlight'   "C++ syntax highlight
 " Plugin 'lervag/vimtex'        " latex for vim plugin
 " Plugin 'xuhdev/vim-latex-live-preview' "实时输出vim编写的LaTeX的文档的效果
+Plugin 'JamshedVesuna/vim-markdown-preview'  "markdown preview
 " 
 
 
@@ -212,7 +220,7 @@ nmap <leader>a :A<CR>
  let g:airline_detect_iminsert=1
  let g:airline_detect_paste=1
  let g:airline#extensions#whitespace#show_message = 0 " 不显示末尾空行
- let g:airline_section_c = '%t'     "只显示文件名，不显示路径
+ " let g:airline_section_c = '%t'     "只显示文件名，不显示路径
 " 在同一个vim使用buffer打开多个文件设置
 let g:airline#extensions#tabline#enabled = 1 " 显增加buffer ，在同一个窗口打开多个vim
 set hidden "避免必须保存修改才能跳转buffer
@@ -277,7 +285,7 @@ let g:cpp_experimental_simple_template_highlight = 1    "hightlight template fun
 " 添加配置文件，这里是网上的添加了C++的文件的py文件。这个文件在下载的ycm中没有，需要自己去配置，当前文件下载于https://github.com/JDevlieghere/dotfiles/blob/master/.vim/.ycm_extra_conf.py
 let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/.ycm_extra_conf.py'
 
-" 不显示开启vim时检查ycm_extra_conf文件的信息  
+" 显示开启vim时检查ycm_extra_conf文件的信息  
 let g:ycm_confirm_extra_conf=0
 set completeopt=longest,menu	"让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
 inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"	"回车即选中当前项
@@ -336,6 +344,34 @@ let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 
 " [RainbowParentheses](plugin)(color)(effect)
 " 给配对的括号着色
+" let g:rbpt_colorpairs = [
+"     \ ['brown',       'RoyalBlue3'],
+"     \ ['Darkblue',    'SeaGreen3'],
+"     \ ['darkgray',    'DarkOrchid3'],
+"     \ ['darkgreen',   'firebrick3'],
+"     \ ['darkcyan',    'RoyalBlue3'],
+"     \ ['darkred',     'SeaGreen3'],
+"     \ ['darkmagenta', 'DarkOrchid3'],
+"     \ ['brown',       'firebrick3'],
+"     \ ['gray',        'RoyalBlue3'],
+"     \ ['darkmagenta', 'DarkOrchid3'],
+"     \ ['Darkblue',    'firebrick3'],
+"     \ ['darkgreen',   'RoyalBlue3'],
+"     \ ['darkcyan',    'SeaGreen3'],
+"     \ ['darkred',     'DarkOrchid3'],
+"     \ ['red',         'firebrick3'],
+    " \ ]
+" let g:rbpt_max = 16
+" let g:rbpt_loadcmd_toggle = 0
+" autocmd VimEnter * RainbowParenthesesActivate
+" autocmd Syntax * RainbowParenthesesLoadRound
+" autocmd Syntax * RainbowParenthesesLoadSquare
+" autocmd Syntax * RainbowParenthesesLoadBraces
+" [RainbowParentheses]$
+
+
+
+" [rainbow](plugin)(color)(effect)
 let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 
 "setting from the offical introduction 
@@ -362,31 +398,7 @@ let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 	\	}
 	\}
 
-"original setting for rainbow 
-" let g:rbpt_colorpairs = [
-"     \ ['brown',       'RoyalBlue3'],
-"     \ ['Darkblue',    'SeaGreen3'],
-"     \ ['darkgray',    'DarkOrchid3'],
-"     \ ['darkgreen',   'firebrick3'],
-"     \ ['darkcyan',    'RoyalBlue3'],
-"     \ ['darkred',     'SeaGreen3'],
-"     \ ['darkmagenta', 'DarkOrchid3'],
-"     \ ['brown',       'firebrick3'],
-"     \ ['gray',        'RoyalBlue3'],
-"     \ ['darkmagenta', 'DarkOrchid3'],
-"     \ ['Darkblue',    'firebrick3'],
-"     \ ['darkgreen',   'RoyalBlue3'],
-"     \ ['darkcyan',    'SeaGreen3'],
-"     \ ['darkred',     'DarkOrchid3'],
-"     \ ['red',         'firebrick3'],
-    \ ]
-let g:rbpt_max = 16
-let g:rbpt_loadcmd_toggle = 0
-autocmd VimEnter * RainbowParenthesesActivate
-autocmd Syntax * RainbowParenthesesLoadRound
-autocmd Syntax * RainbowParenthesesLoadSquare
-autocmd Syntax * RainbowParenthesesLoadBraces
-" [RainbowParentheses]$
+" [rainbow]$
 
 
 " [ctrlp](plugin)(file)(effect)
@@ -407,25 +419,56 @@ let g:ctrlp_open_multiple_files = 'v'
 " [vim-indent-guide] $
 
 
-" [syntastic](plugin)(syntax) (effect)
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_cpp_include_dirs = ['/usr/include/']
-let g:syntastic_cpp_remove_include_errors = 1
-let g:syntastic_cpp_check_header = 1
-let g:syntastic_cpp_compiler = 'clang++'
-let g:syntastic_cpp_compiler_options = '-std=c++1z '
-"set error or warning signs
-let g:syntastic_error_symbol = '✗'
-let g:syntastic_warning_symbol = '⚠'
-""whether to show balloons
-let g:syntastic_enable_balloons = 1
-" [syntastic]$
+" " [syntastic](plugin)(syntax)
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 0
+" let g:syntastic_cpp_include_dirs = ['/usr/include/']
+" let g:syntastic_cpp_remove_include_errors = 1
+" let g:syntastic_cpp_check_header = 1
+" let g:syntastic_cpp_compiler = 'clang++'
+" let g:syntastic_cpp_compiler_options = '-std=c++1z '
+" "set error or warning signs
+" let g:syntastic_error_symbol = '✗'
+" let g:syntastic_warning_symbol = '⚠'
+" ""whether to show balloons
+" let g:syntastic_enable_balloons = 1
+" nmap <leader>sq :SyntasticReset<CR>
+" " [syntastic]$
+
+
+"[ALE] (plugin)(effect)
+let g:ale_linters_explicit = 1
+let g:ale_completion_delay = 500
+let g:ale_echo_delay = 20
+let g:ale_lint_delay = 500
+let g:ale_echo_msg_format = '[%linter%] %code: %%s'
+let g:ale_lint_on_text_changed = 'normal'
+let g:ale_lint_on_insert_leave = 1
+let g:airline#extensions#ale#enabled = 1
+
+let g:ale_c_gcc_options = '-Wall -O2 -std=c99'
+let g:ale_cpp_gcc_options = '-Wall -O2 -std=c++11'
+let g:ale_c_cppcheck_options = ''
+let g:ale_cpp_cppcheck_options = ''
+
+"错误信息linter的样式
+let g:ale_sign_error = "\ue009\ue009"
+hi! clear SpellBad
+hi! clear SpellCap
+hi! clear SpellRare
+hi! SpellBad gui=undercurl guisp=red
+hi! SpellCap gui=undercurl guisp=blue
+hi! SpellRare gui=undercurl guisp=magenta
+
+
+"[ALE] $
 
 
 "[tagbar](plugin)(effect)
+nmap <F9> :TagbarToggle<CR>
 nmap <leader>tb :TagbarToggle<CR>
+
 "启动的时候，自动focus
 let g:tagbar_autofocus = 1
 " 设置 tagbar 子窗口的位置出现在主编辑区的左边 
@@ -582,6 +625,35 @@ let g:indexer_ctagsCommandLineOptions="--c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v 
 "[vimtex] (Plugin) (ineffect)
 "for usage tyep :h vimtex
 "[vimtex] $
+
+
+"[vim-markdown-preview] (plugin) (effect)
+let vim_markdown_preview_github=1
+
+"[vim-gutentags]  {Plugin)  (effect) 
+"gutentags搜索工程目录标志递归到上面的目录
+let g:gutentags_project_root = ['.tags','.root', '.svn', '.git', '.hg', '.project']
+
+" 所生成的数据文件的名称
+let g:gutentags_ctags_tagfile = '.tags'
+
+" " 同时开启 ctags 和 gtags 支持：
+" let g:gutentags_modules = []
+" if executable('ctags')
+"     let g:gutentags_modules += ['ctags']
+" endif
+" if executable('gtags-cscope') && executable('gtags')
+"     let g:gutentags_modules += ['gtags_cscope']
+" endif
+
+" 配置 ctags 的参数
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+" 如果使用 universal ctags 需要增加下面一行 兼容原本的ctags
+let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
+
 
 
 

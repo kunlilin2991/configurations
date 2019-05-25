@@ -161,6 +161,8 @@ alias cpdir='copydir'
 
 alias z='jump'  # jump is a plugin and z is also a plugin for zsh, fake z to be jump
 
+alias tags='ctags -R * && gtags' update ctags files
+
 
 #添加默认启动tmux
 # If not running interactively, do not do anything
@@ -175,13 +177,21 @@ eval `dircolors $HOME/.dircolors/dircolors.ansi-universal`
 #function define
 
 #简化git的命令
-gpush()
+pushmst()
 {
     git push origin master
 }
-gpull()
+pullmst()
 {
     git pull origin master
+}
+pushdev()
+{
+    git push origin dev
+}
+pulldev()
+{
+    git pull origin dev
 }
 
 #简化find命令
@@ -191,11 +201,10 @@ lfind(){
 #使用masterpdf打开文档
 masterpdf()
 {
-    masterpdfeditor4 $1 > /dev/null 2>&1 
+    masterpdfeditor5 $1 > /dev/null 2>&1 
 }
 
 
- 
  
  
 #end of zshrc
