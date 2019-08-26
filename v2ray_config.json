@@ -1,0 +1,20 @@
+{
+  "inbounds": [{
+    "port": 87, // 服务器监听端口，必须和上面的一样
+    "protocol": "vmess",
+    "settings": {
+      "clients": [{ "id": "6eb7104d-5668-42ea-bc68-d482e0542ea9","level" :1,"alterId": 64,"security":"aes-128-gcm"},
+	      { "id": "07827219-f039-4fb4-b283-753ac7bb25ff","level" :1, "alterId":64, "security":"auto"},
+		{ "id": "d6b3eaab-a19c-4b3c-882a-f4fcbfb64b7e","level" :1,"alterId": 64,"security":"aes-128-gcm"},
+	      {"id":"13f0d854-6f5c-4e67-b53b-998518b67faf","level":1,"alterId":16,"security":"auto"},
+	      { "id": "580a8afe-c654-43b7-9535-68b1bb393a03","level": 2, "alterId":16},
+	      {"id":"db3da497-7e29-4b57-bcb1-addcd3ab3e55","level":3,"alterId":16,"security":"auto"},
+	      {"id":"af9618e0-c9f1-4b00-a1a3-ba7eb7ffd8c7","level":4,"alterId":32,"security":"auto"}
+      ]
+    }
+  }],
+  "outbounds": [{
+    "protocol": "freedom",
+    "settings": {}
+  }]
+}
