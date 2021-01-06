@@ -102,7 +102,7 @@ set cursorcolumn
 
 "距离底部的空行
 " set scrolloff=15
-set scrolloff =999  " 设定999的目的是编辑行始终在屏幕的中间一行。zz快捷键是手动设定在屏幕的中间。
+set scrolloff =15 " 设定999的目的是编辑行始终在屏幕的中间一行。zz快捷键是手动设定在屏幕的中间。
 
 "折叠行 za是打开或者关闭折叠 zM关闭所有折叠 zR打开所有折叠
 "zf是创建折叠，XXzf+ - 分别是对下面或者上面多少行进行这些
@@ -134,6 +134,8 @@ set showcmd "显示状态栏
 set tags=./.tags;,.tags
 set autochdir
 
+let g:tex_flavor = "latex"
+
 
 "插件管理
 
@@ -163,12 +165,13 @@ Plugin 'luochen1990/rainbow'    "括号等的配对颜色
 Plugin 'Sirver/ultisnips'       "智能补全，输入提示
 Plugin 'kien/ctrlp.vim'     "查找文件 在全部的文件系统中 而不是在文件中查找
 " Plugin 'nathanaelkane/vim-indent-guides'    "可视的显示缩进
+Plugin 'Yggdroot/indentLine'   "缩进显示
 " Plugin 'scrooloose/syntastic'    "显示错误信息
 Plugin 'w0rp/ale'   "新的错误信息
 Plugin 'majutsushi/tagbar'      "查看结构体自定义快捷键是leader tb
 Plugin 'vim-scripts/TaskList.vim'       "通过fixme tudo等去快速跳转
 Plugin 'junegunn/vim-easy-align'        "各种缩进等
-Plugin 'thinca/vim-quickrun'            "在vim中直接运行一个小程序
+" Plugin 'thinca/vim-quickrun'            "在vim中直接运行一个小程序
 Plugin 'sjl/gundo.vim'              "类似与git的功能，本地的版本控制
 Plugin 'chusiang/vim-sdcv'          "在vim中使用sdcv
 Plugin 'scrooloose/nerdcommenter'       "快速注释
@@ -185,8 +188,7 @@ Plugin 'octol/vim-cpp-enhanced-highlight'   "C++ syntax highlight
 " Plugin 'lervag/vimtex'        " latex for vim plugin
 " Plugin 'xuhdev/vim-latex-live-preview' "实时输出vim编写的LaTeX的文档的效果
 Plugin 'JamshedVesuna/vim-markdown-preview'  "markdown preview
-" 
-
+Plugin 'szw/vim-tags' "ctags generator
 
 call vundle#end()
 filetype plugin indent on
@@ -378,7 +380,7 @@ let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 	let g:rainbow_conf = {
 	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
 	\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
-	\	'operators': '_,_',
+    \	'operators': '_,_',
 	\	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
 	\	'separately': {
 	\		'*': {},
@@ -418,6 +420,14 @@ let g:ctrlp_open_multiple_files = 'v'
 " let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
 " [vim-indent-guide] $
 
+
+"[IdentLine](Plugin)(effect)
+let g:indentLine_char = 'c'
+let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+let g:indentLine_setConceal = 0
+" let g:indentLine_concealcursor = 'nv'
+" let g:indentLine_conceallevel = 2
+"[identLine]$
 
 " " [syntastic](plugin)(syntax)
 " let g:syntastic_always_populate_loc_list = 1
@@ -531,15 +541,15 @@ vmap <Enter> <Plug>(EasyAlign)
 "[EasyAlign]$
 
 
-"[vim-quickrun](plugin)(effect)
-nmap <Leader>r <Plug>(quickrun)
-let g:quickrun_config = {}
-let g:quickrun_config.cpp = {
-            \ 'type': 'cpp/clang++',
-            \ 'cmdopt': '-std=c++1z -I ~/include'
-            \}
-"直接在vim中运行一个小程序，不需要声明等，就直接一个函数就可以了
-"[vim-quickrun]$
+"[vim-quickrun](plugin)
+" nmap <Leader>r <Plug>(quickrun)
+" let g:quickrun_config = {}
+" let g:quickrun_config.cpp = {
+"             \ 'type': 'cpp/clang++',
+"             \ 'cmdopt': '-std=c++1z -I ~/include'
+"             \}
+" "直接在vim中运行一个小程序，不需要声明等，就直接一个函数就可以了
+" "[vim-quickrun]$
 
 
 "[gundo](plugin)(effect)
@@ -629,15 +639,21 @@ let g:indexer_ctagsCommandLineOptions="--c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v 
 
 "[vim-markdown-preview] (plugin) (effect)
 let vim_markdown_preview_github=1
+let vim_markdown_preview_toggle=1
+let vim_markdown_preview_browser='Google Chrome'
+
 
 "[vim-gutentags]  {Plugin)  (effect) 
-"gutentags搜索工程目录标志递归到上面的目录
-let g:gutentags_project_root = ['.tags','.root', '.svn', '.git', '.hg', '.project']
+"[gutentags_plus] gtags索引文件配置
+
+" gutentags 搜索工程目录的标志，当前文件路径向上递归直到碰到这些文件/目录名
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
 
 " 所生成的数据文件的名称
 let g:gutentags_ctags_tagfile = '.tags'
 
-" " 同时开启 ctags 和 gtags 支持：
+" 同时开启 ctags 和 gtags 支持：
+let g:gutentags_modules = ['ctags', 'gtags_cscope']
 " let g:gutentags_modules = []
 " if executable('ctags')
 "     let g:gutentags_modules += ['ctags']
@@ -646,13 +662,46 @@ let g:gutentags_ctags_tagfile = '.tags'
 "     let g:gutentags_modules += ['gtags_cscope']
 " endif
 
-" 配置 ctags 的参数
+" 将自动生成的 ctags/gtags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
+let g:gutentags_cache_dir = expand('~/.cache/tags')
+
+" 配置 ctags 的参数，老的 Exuberant-ctags 不能有 --extra=+q，注意
 let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
-let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+pxI']
 let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
 
-" 如果使用 universal ctags 需要增加下面一行 兼容原本的ctags
+" 如果使用 universal ctags 需要增加下面一行，老的 Exuberant-ctags 不能加下一行
 let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
+
+"禁用官方的按键 原因是leader cc 注释相冲突
+let g:gutentags_plus_nomap = 1
+"新的快捷键
+noremap <silent> <leader>gs :GscopeFind s <C-R><C-W><cr>
+noremap <silent> <leader>gg :GscopeFind g <C-R><C-W><cr>
+noremap <silent> <leader>gc :GscopeFind c <C-R><C-W><cr>
+noremap <silent> <leader>gt :GscopeFind t <C-R><C-W><cr>
+noremap <silent> <leader>ge :GscopeFind e <C-R><C-W><cr>
+noremap <silent> <leader>gf :GscopeFind f <C-R>=expand("<cfile>")<cr><cr>
+noremap <silent> <leader>gi :GscopeFind i <C-R>=expand("<cfile>")<cr><cr>
+noremap <silent> <leader>gd :GscopeFind d <C-R><C-W><cr>
+noremap <silent> <leader>ga :GscopeFind a <C-R><C-W><cr>
+noremap <silent> <leader>gz :GscopeFind z <C-R><C-W><cr>
+
+" 错误提示信息输出
+let g:gutentags_define_advanced_commands = 1
+
+" [szw/vim-tags] (Plugin) (effect) ctags generator
+let g:vim_tags_auto_generate = 1 "当文件保存时，自动更新tags文件
+let g:vim_tags_project_tags_command = "{CTAGS} -R {OPTIONS} {DIRECTORY} 2>/dev/null"
+let g:vim_tags_use_language_field = 1 "与youcompleteme兼容
+let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore']   "忽略的文件
+let g:vim_tags_directories = [".git", ".hg", ".svn", ".bzr", "_darcs", "CVS"]  "忽略的文件件
+let g:vim_tags_main_file = 'tags'
+let g:vim_tags_extension = '.tags'
+let g:vim_tags_cache_dir = expand($HOME)
+" let g:vim_tags_cache_dir = expand(`~/.cache/tags/`)
+
+
 
 
 
