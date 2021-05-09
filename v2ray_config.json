@@ -1,18 +1,58 @@
 {
-  "inbounds": [{
-    "port": 87, // 服务器监听端口，必须和上面的一样
-    "protocol": "vmess",
-    "settings": {
-      "clients": [{ "id": "6eb7104d-5668-42ea-bc68-d482e0542ea9","level" :1,"alterId": 64,"security":"aes-128-gcm"},
-	      { "id": "07827219-f039-4fb4-b283-753ac7bb25ff","level" :1, "alterId":64, "security":"auto"},
-		{ "id": "d6b3eaab-a19c-4b3c-882a-f4fcbfb64b7e","level" :1,"alterId": 64,"security":"aes-128-gcm"},
-	      {"id":"13f0d854-6f5c-4e67-b53b-998518b67faf","level":1,"alterId":16,"security":"auto"},
-	      { "id": "580a8afe-c654-43b7-9535-68b1bb393a03","level": 2, "alterId":16},
-	      {"id":"db3da497-7e29-4b57-bcb1-addcd3ab3e55","level":3,"alterId":16,"security":"auto"},
-	      {"id":"af9618e0-c9f1-4b00-a1a3-ba7eb7ffd8c7","level":4,"alterId":32,"security":"auto"}
-      ]
-    }
-  }],
+    "inbounds": [
+        {
+            "port": 87, // 服务器监听端口，必须和上面的一样
+            "protocol": "vmess",
+            "settings": {
+                "clients": [
+{"id": "001af3a2-f871-4ecb-9890-dcbc5c74ab0a", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "002e4dcd-b6ec-4f56-8236-22d2603aecaf", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "003b11e8-5ced-47e9-9738-d8fb1d0201b4", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "004145db-fe54-4eca-a49d-76eb504c8357", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "005f8078-1f83-45ea-8f96-a417f1c7418b", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "006ee6ca-2416-4fb2-a086-86212f83e897", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "007759d2-ccb2-40d1-8516-329370c5b8e8", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "00850a2a-12cd-4f72-8219-af38fea07208", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "00973e51-666f-41d9-b0e5-89ba2424bbb3", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "00ab1913-66ad-4e4e-a9f5-339d65d83167", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "00b0cc5d-39c0-4b46-9b1f-621b5c960039", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "00cf7848-727c-47cf-b670-0b8bd7e3524b", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "00d6aed7-b7c0-4243-b93d-b0f5b761531d", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "00e4220d-9a51-4946-84cd-248aed1ccb18", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "00f284c4-29fb-4677-999a-c5d75a44ad44", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "010b6409-e203-45cb-a849-75f7c85d50a1", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "0119f6a2-dc86-4003-b2a2-44cb3677f19b", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "0122bb9d-1c5c-4c07-bb38-cb62e782f341", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "0133f7d7-02c2-4910-9109-46d799928cdd", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "014b1409-6d49-45ff-8efd-8cf4dff0ec48", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "0157a035-b8c5-48e5-b57a-3159811c36da", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "01663464-0fc0-4d4c-a86d-79eb7906ec7c", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "017c1ea8-1047-43d2-96e5-d54f637781d7", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "0186cd52-6c27-4f17-9f8d-8295362e53ef", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "0195ff44-dfff-4c59-b8d0-55ac5cc2a52c", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "01a4d273-247f-41c9-88ce-7b093cbed720", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "01b1c9fa-9ecf-4881-bff8-0e7fc1685be6", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "914bdc8d-42a5-43a7-b922-cdeaa5494db2", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "590a3390-2f6d-42d1-a7eb-89208e7cb50c", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "120c8dd0-39dd-4b72-b219-8b30d9e1bfb7", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "a32e00db-5946-4eed-b31b-9ba8d40c5eec", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "8de5e51c-7398-4f7e-ab7e-fe057c11ad35", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "cce83723-44d2-47de-8a70-a67e7f8728fd", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "c99b6847-cf99-415e-b56d-b690d8c23bb7", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "314f3e5c-aec2-4701-bc3b-cd8b6fc0de19", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "0bb74257-907c-426c-a8a0-bdd5f7fb9e7c", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "f7049f57-dd44-4b7c-a249-41dd73d1fb86", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "c0a037b5-6fa1-4e51-873f-21b950b48bf2", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "1c0bcad1-811f-4558-b2aa-87cad9425f8d", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "18d33d8d-0a63-4a1b-bfc9-bccb6b43a124", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "bec0a9b6-9071-4f7b-a7a5-e12614acf2e6", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "f9f06f03-fb40-4645-8493-64f10d9f5a81", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "1a6b1689-9bfa-45a6-95a0-892d0dbfa9ff", "level": 1, "alterId": 64, "security": "aes-128-gcm"},
+{"id": "6896f1d1-7cab-42e7-9598-e3a1f976ed1d", "level": 1, "alterId": 64, "security": "aes-128-gcm"}
+                ]
+            }
+        }
+    ],
   "outbounds": [{
     "protocol": "freedom",
     "settings": {}
