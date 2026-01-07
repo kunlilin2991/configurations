@@ -1,192 +1,43 @@
-{
-    // =====================================================
-    //  vscode Setting Begin 
-    // =====================================================
-    "editor.showUnused": false,
-    "breadcrumbs.enabled": true,
-    "files.autoSave": "afterDelay",
-    "workbench.settings.applyToAllProfiles": [
-        
-    ],
-    // =====================================================
-    // 高亮当前行
-    // =====================================================
-    "editor.renderLineHighlight": "all",
-    "workbench.colorCustomizations": {
-        "editor.lineHighlightBackground": "#1E1E2E", // 柔和的背景色
-        "editor.lineHighlightBorder": "#636989"     // 边框色，增强区分度
+[
+	// =====================================================
+	// Ctrl-w 窗口跳转（Vim 语义）
+	// =====================================================
+	{"before": [ "<C-w>", "h" ], "commands": [ "workbench.action.focusLeftGroup" ], "when": "vim.mode == 'Normal'" },
+	{ "before": [ "<C-w>", "l" ], "commands": [ "workbench.action.focusRightGroup" ], "when": "vim.mode == 'Normal'" },
+	{ "before": [ "<C-w>", "j" ], "commands": [ "workbench.action.focusBelowGroup" ], "when": "vim.mode == 'Normal'" },
+	{ "before": [ "<C-w>", "k" ], "commands": [ "workbench.action.focusAboveGroup" ], "when": "vim.mode == 'Normal'" },
+	{ "before": [ "<C-w>", "w" ], "commands": [ "workbench.action.focusNextGroup" ], "when": "vim.mode == 'Normal'" },
+
+	// =====================================================
+	// vim的代码检索 函数跳转 导航栈快速配置
+	// =====================================================
+    //Ctrl+\ 跳转到函数原型/定义
+    { "key": "ctrl+\\", "command": "editor.action.goToDefinition", "when": "editorTextFocus && !editorReadonly"},
+    //Ctrl+] 跳转到函数声明
+    { "key": "ctrl+]", "command": "editor.action.goToDeclaration", "when": "editorTextFocus && !editorReadonly"},
+    //Ctrl+[ 跳转到函数被引用的地方 vscode原生为ctrl + shift + o
+	{ "key": "ctrl+shift+r", "command": "editor.action.findReferences", "when": "editorTextFocus && !editorReadonly" },
+    // 3. 严格匹配 Vim：Ctrl+I 导航栈前进（下一个位置）
+    {
+        "key": "ctrl+i",
+        "command": "workbench.action.navigateForward",
+        "when": "editorTextFocus && workbench.navigation.stack.forwardAvailable",
+        "priority": 100 // 提高优先级，覆盖默认映射（如 Tab）
     },
-    "editor.lineNumbers": "on",
-    "editor.lineHighlightOnFocus": true,
-
-    "editior.lineNumbers" : "relative",
-    // =====================================================
-    // 自动缩进 / 格式相关
-    // =====================================================
-    "editor.autoIndent": "advanced",
-    "editor.tabSize": 4,
-    "editor.formatOnPaste": true,
-    "editor.formatOnType": true,
-    "editor.insertSpaces": false,
-    //"indentRainbow.enabled" : true,
-    "editor.wordWrap": "on",
-    // =====================================================
-    // buffer / tab 显示
-    // =====================================================
-    "workbench.editor.showTabs": true,
-    "numberedTabs.enabled": true,
-
-    // =====================================================
-    // Outline（Tagbar 替代）
-    // =====================================================
-    "outline.showVariables": true,
-
-    // =====================================================
-    // TODO / FIXME 高亮
-    // =====================================================
-    "todo-tree.general.tags": [
-        "TODO",
-        "FIXME",
-        "BUG"
-    ],
-    "todo-tree.highlights.enabled": true,
-    "todo-tree.highlights.highlightEntireLine": true,
-    "todo-tree.general.caseSensitive": false,
-    "todo-tree.highlights.customHighlight": {
-        "TODO": {
-            "foreground": "#ffffff",
-            "background": "#ff9800"
-        },
-        "FIXME": {
-            "foreground": "#ffffff",
-            "background": "#f44336"
-        },
-        "BUG": {
-            "foreground": "#ffffff",
-            "background": "#e91e64"
-        }
+    // 4. 严格匹配 Vim：Ctrl+O 导航栈后退（上一个位置）
+    {
+        "key": "ctrl+o",
+        "command": "workbench.action.navigateBack",
+        "when": "editorTextFocus && workbench.navigation.stack.backAvailable",
+        "priority": 100 // 提高优先级，覆盖默认映射
     },
+    // 5. 备用返回：Ctrl+T 导航栈后退（与你的原始需求一致）
+    { "key": "ctrl+t", "command": "workbench.action.navigateBack", "when": "editorTextFocus && workbench.navigation.stack.backAvailable" },
 
-    // =====================================================
-    // 括号的范围显示
-    // =====================================================
-    // 核心：启用括号对颜色化
-    "editor.bracketPairColorization.enabled": true,
-    // 显示当前括号对的垂直引导线（active=仅当前，all=全部）
-    "editor.guides.bracketPairs": "active",
-    // 显示当前括号对的水平引导线（适配嵌套）
-    "editor.guides.bracketPairsHorizontal": "active",
-    // 高亮当前活动括号对的引导线
-    "editor.guides.highlightActiveBracketPair": true,
-
-    // =====================================================
-    // 函数原型动态提示
-    // =====================================================
-    "editor.parameterHints.enabled": true,
-    "editor.parameterHints.cycle": true,
-    "editor.suggest.snippetsPreventQuickSuggestions": false,
-    "editor.quickSuggestionsDelay": 50,
-
-    // =====================================================
-    // 代码检索与跳转
-    // =====================================================
-    // 开启导航栈核心功能（必须，否则 Ctrl+I/O 无效）
-    "workbench.navigation.stack.enabled": true,
-    "workbench.navigation.stack.maxEntries": 101, // 增大栈容量，匹配 Vim 习惯
-    "workbench.navigation.stack.includeEditors": true,
-    "workbench.navigation.stack.includeTerminals": false,
-    // 函数原型跳转优化：优先跳转到定义，支持多语言
-    "editor.gotoLocation.multipleDefinitions": "pick",
-    "editor.gotoLocation.multipleImplementations": "pick",
-    "editor.gotoLocation.multipleTypeDefinitions": "pick",
-    "editor.gotoLocation.preferDefinitions": true,
-    "editor.gotoLocation.preferOpenEditors": true, // 优先显示已打开的文件中的匹配项
-    "editor.gotoLocation.showIcons": true, // 面板中显示文件类型图标
-    // 查找函数引用时，自动聚焦到引用面板
-    "references.preferredLocation": "view",
-    // 引用面板默认展开所有结果
-    "references.view.expandMode": "all",
-    // 显示引用的行号和列号
-    "references.view.showColumns": true,
-    //屏蔽几个关键检索的按键，只用于代码检索
-    "vim.useCtrlKeys": true,
-    //具体的按键的重定义在keybindings.json中
-    "vim.handleKeys": {
-        "<C-i>": false,
-        "<C-o>": false,
-        "<C-\\>": false,
-        "<C-t>": false,
-        "<C-]": false,
-        "<C-[": false,
-    },
-
-    // =====================================================
-    //   Vim Setting Begin
-    // =====================================================
-    "vim.leader": ";",
-    "vim.easymotion": true,
-    //"vim.hlsearch": true,
-    "vim.ignorecase": true,
-    "vim.smartcase": true,
-    //区分vim跟系统粘贴板
-    "vim.useSystemClipboard": false,
-    // =====================================================
-    //   Vim commond (:command)
-    // =====================================================
-    "vim.commands": [
-        // ---------------- buffer ----------------
-        { "key": "bd", "command": "workbench.action.closeActiveEditor" },
-        { "key": "bd!", "command": "workbench.action.revertAndCloseActiveEditor" },
-        { "key": "bn", "command": "workbench.action.nextEditor" },
-        { "key": "bnext", "command": "workbench.action.nextEditor" },
-        { "key": "bp", "command": "workbench.action.previousEditor" },
-        { "key": "bprev", "command": "workbench.action.previousEditor" },
-        // ---------------- window ----------------
-        { "key": "only", "command": "workbench.action.closeOtherEditors" },
-        { "key": "q", "command": "workbench.action.closeActiveEditor" },
-        { "key": "qa", "command": "workbench.action.closeAllEditors" },
-        { "key": "w", "command": "workbench.action.files.save" },
-        { "key": "wq", "command": "workbench.action.files.saveAndClose" },
-        { "key": "wa", "command": "workbench.action.files.saveAll" },
-        { "key": "e", "command" : "workbench.action.quickOpen"},
-        // ---------------- split ----------------
-        { "key": "sp", "command": "workbench.action.splitEditorDown" },
-        { "key": "split", "command": "workbench.action.splitEditorDown" },
-        { "key": "vsp", "command": "workbench.action.splitEditorRight" },
-        { "key": "vsplit", "command": "workbench.action.splitEditorRight" }
-    ],
-    // =====================================================
-    //   Vim normal mode command
-    // =====================================================
-    "vim.normalModeKeyBindingsNonRecursive": [
-        { "before": ["l","e"], "after":["$"]},
-        { "before": ["l","b"], "after":["^"]},
-        { "before": [ "<leader>", "y" ], "after": [ "\"", "+", "y" ]},
-        { "before": [ "<leader>", "p" ], "after": [ "\"", "+", "p" ]},
-        { "before": [ "<leader>", "/" ], "commands":[ "editor.action.clearFindHighlight"]},
-        { "before": [ "<leader>", "fa" ], "commands": [ "editor.action.formatDocument" ]},
-        { "before": [ "<leader>", "f" ], "commands": [ "editor.action.formatSelection" ]},
-        //easymotion 快捷键
-        { "before": ["<leader>", "<leader>", "w"], "commands": ["vim.easymotion.start", "vim.easymotion.selectWordStart"]},
-        { "before": ["<leader>", "<leader>", "f"], "commands": ["vim.easymotion.start", "vim.easymotion.selectCharForward"]},
-        { "before": ["<leader>", "<leader>", "e"], "commands": ["vim.easymotion.start", "vim.easymotion.selectWordEnd"]}
-    ],
-    // =====================================================
-    //   Vim visual mode command
-    // =====================================================
-    "vim.visualModeKeyBindingsNonRecursive": [
-        { "before": [ "<leader>", "f" ], "commands": [ "editor.action.formatSelection" ]},
-        { "before": ["l","e"], "after":["$"]},
-        { "before": ["l","b"], "after":["^"]},
-    ],
-    // =====================================================
-    //   Vim Setting End 
-    // =====================================================
-
-    // extension: relative line numbers
-    "extension.relativeLineNumbersEnable": true,
-    // extension: tabby tab managers
-    //F10 switch to tab mode, 1 2 3 switch to different tabs
-    "tabby.showTabIndex": true, // 显示序号
-    "tabby.tabIndexPosition": "left", // 序号在左侧
-}
+    //Ctrl+[ 查看导航栈完整记录（替代之前的 Ctrl+I O）
+    { "key": "ctrl+[", "command": "workbench.action.navigationStack.show", "when": "editorTextFocus" },
+    // 解决冲突：禁用 Ctrl+I 与 Tab 的默认映射
+    { "key": "ctrl+i", "command": "-tab", "when": "editorTextFocus" },
+    // 解决冲突：禁用 Ctrl+O 的默认映射（如打开文件）
+    { "key": "ctrl+o", "command": "-workbench.action.files.openFile", "when": "!editorTextFocus" },
+]
