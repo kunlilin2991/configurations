@@ -1,0 +1,124 @@
+{
+    // =====================================================
+    //  vscode Setting Begin 
+    // =====================================================
+    "editor.showUnused": false,
+    "breadcrumbs.enabled": true,
+    "files.autoSave": "afterDelay",
+    "workbench.settings.applyToAllProfiles": [
+        
+    ],
+
+    "editior.lineNumbers" : "relative",
+    // =====================================================
+    // 自动缩进 / 格式相关
+    // =====================================================
+    "editor.autoIndent": "advanced",
+    "editor.tabSize": 4,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    "editor.insertSpaces": false,
+    "indentRainbow.enabled" : true,
+    "editor.wordWrap": "on",
+    // =====================================================
+    // buffer / tab 显示
+    // =====================================================
+    //"workbench.editor.showTabs": true,
+    "numberedTabs.enabled": true,
+
+    // =====================================================
+    // Outline（Tagbar 替代）
+    // =====================================================
+    "outline.showVariables": true,
+
+    // =====================================================
+    // TODO / FIXME 高亮
+    // =====================================================
+    "todo-tree.general.tags": [
+        "TODO",
+        "FIXME",
+        "BUG"
+    ],
+    "todo-tree.highlights.enabled": true,
+    "todo-tree.highlights.highlightEntireLine": true,
+    "todo-tree.general.caseSensitive": false,
+    "todo-tree.highlights.customHighlight": {
+        "TODO": {
+            "foreground": "#ffffff",
+            "background": "#ff9800"
+        },
+        "FIXME": {
+            "foreground": "#ffffff",
+            "background": "#f44336"
+        },
+        "BUG": {
+            "foreground": "#ffffff",
+            "background": "#e91e64"
+        }
+    },
+
+    // =====================================================
+    // 函数原型动态提示
+    // =====================================================
+    "editor.parameterHints.enabled": true,
+    "editor.parameterHints.cycle": true,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.quickSuggestionsDelay": 50,
+
+    // =====================================================
+    //   Vim Setting Begin
+    // =====================================================
+    "vim.leader": ";",
+    "vim.easymotion": true,
+    "vim.hlsearch": true,
+    "vim.ignorecase": true,
+    "vim.smartcase": true,
+    //区分vim跟系统粘贴板
+    "vim.useSystemClipboard": false,
+    // =====================================================
+    //   Vim commond (:command)
+    // =====================================================
+    "vim.commands": [
+        // ---------------- buffer ----------------
+        { "key": "bd", "command": "workbench.action.closeActiveEditor" },
+        { "key": "bd!", "command": "workbench.action.revertAndCloseActiveEditor" },
+        { "key": "bn", "command": "workbench.action.nextEditor" },
+        { "key": "bnext", "command": "workbench.action.nextEditor" },
+        { "key": "bp", "command": "workbench.action.previousEditor" },
+        { "key": "bprev", "command": "workbench.action.previousEditor" },
+        // ---------------- window ----------------
+        { "key": "only", "command": "workbench.action.closeOtherEditors" },
+        { "key": "q", "command": "workbench.action.closeActiveEditor" },
+        { "key": "qa", "command": "workbench.action.closeAllEditors" },
+        { "key": "w", "command": "workbench.action.files.save" },
+        { "key": "wq", "command": "workbench.action.files.saveAndClose" },
+        { "key": "wa", "command": "workbench.action.files.saveAll" },
+        { "key": "e", "command" : "workbench.action.quickOpen"},
+        // ---------------- split ----------------
+        { "key": "sp", "command": "workbench.action.splitEditorDown" },
+        { "key": "split", "command": "workbench.action.splitEditorDown" },
+        { "key": "vsp", "command": "workbench.action.splitEditorRight" },
+        { "key": "vsplit", "command": "workbench.action.splitEditorRight" }
+    ],
+    // =====================================================
+    //   Vim normal mode command
+    // =====================================================
+    "vim.normalModeKeyBindingsNonRecursive": [
+        { "before": ["l","e"], "after":["$"]},
+        { "before": ["l","b"], "after":["^"]},
+        { "before": [ "<leader>", "y" ], "after": [ "\"", "+", "y" ]},
+        { "before": [ "<leader>", "p" ], "after": [ "\"", "+", "p" ]},
+        { "before": [ "<leader>", "/" ], "commands":[ "editor.action.clearFindHighlight"]},
+        { "before": [ "<leader>", "fa" ], "commands": [ "editor.action.formatDocument" ]},
+        { "before": [ "<leader>", "f" ], "commands": [ "editor.action.formatSelection" ]},
+    ],
+    // =====================================================
+    //   Vim visual mode command
+    // =====================================================
+    "vim.visualModeKeyBindingsNonRecursive": [
+        { "before": [ "<leader>", "f" ], "commands": [ "editor.action.formatSelection" ]},
+    ],
+    // =====================================================
+    //   Vim Setting End 
+    // =====================================================
+}
