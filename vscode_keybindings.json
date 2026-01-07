@@ -1,10 +1,34 @@
 [
 	// =====================================================
-	// Ctrl-w 窗口跳转（Vim 语义）
+	// vim的代码检索 函数跳转 导航栈快速配置
 	// =====================================================
-	{ "before": [ "<C-w>", "h" ], "commands": [ "workbench.action.focusLeftGroup" ], "when": "vim.mode == 'Normal'" },
-	{ "before": [ "<C-w>", "l" ], "commands": [ "workbench.action.focusRightGroup" ], "when": "vim.mode == 'Normal'" },
-	{ "before": [ "<C-w>", "j" ], "commands": [ "workbench.action.focusBelowGroup" ], "when": "vim.mode == 'Normal'" },
-	{ "before": [ "<C-w>", "k" ], "commands": [ "workbench.action.focusAboveGroup" ], "when": "vim.mode == 'Normal'" },
-	{ "before": [ "<C-w>", "w" ], "commands": [ "workbench.action.focusNextGroup" ], "when": "vim.mode == 'Normal'" },
+    //Ctrl+\ 跳转到函数原型/定义
+    { "key": "ctrl+\\", "command": "editor.action.goToDefinition", "when": "editorTextFocus && !editorReadonly"},
+    //Ctrl+] 跳转到函数声明
+    { "key": "ctrl+]", "command": "editor.action.goToDeclaration", "when": "editorTextFocus && !editorReadonly"},
+    //Ctrl+[ 跳转到函数被引用的地方 vscode原生为ctrl + shift + o
+	{ "key": "ctrl+shift+r", "command": "editor.action.findReferences", "when": "editorTextFocus && !editorReadonly" },
+    // 3. 严格匹配 Vim：Ctrl+I 导航栈前进（下一个位置）
+    {
+        "key": "ctrl+i",
+        "command": "workbench.action.navigateForward",
+        "when": "editorTextFocus && workbench.navigation.stack.forwardAvailable",
+        "priority": 100 // 提高优先级，覆盖默认映射（如 Tab）
+    },
+    // 4. 严格匹配 Vim：Ctrl+O 导航栈后退（上一个位置）
+    {
+        "key": "ctrl+o",
+        "command": "workbench.action.navigateBack",
+        "when": "editorTextFocus && workbench.navigation.stack.backAvailable",
+        "priority": 100 // 提高优先级，覆盖默认映射
+    },
+    // 5. 备用返回：Ctrl+T 导航栈后退（与你的原始需求一致）
+    { "key": "ctrl+t", "command": "workbench.action.navigateBack", "when": "editorTextFocus && workbench.navigation.stack.backAvailable" },
+
+    //Ctrl+[ 查看导航栈完整记录（替代之前的 Ctrl+I O）
+    { "key": "ctrl+[", "command": "workbench.action.navigationStack.show", "when": "editorTextFocus" },
+    // 解决冲突：禁用 Ctrl+I 与 Tab 的默认映射
+    { "key": "ctrl+i", "command": "-tab", "when": "editorTextFocus" },
+    // 解决冲突：禁用 Ctrl+O 的默认映射（如打开文件）
+    { "key": "ctrl+o", "command": "-workbench.action.files.openFile", "when": "!editorTextFocus" },
 ]
