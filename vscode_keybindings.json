@@ -1,0 +1,10 @@
+[
+	// =====================================================
+	// Ctrl-w 窗口跳转（Vim 语义）
+	// =====================================================
+	{ "before": [ "<C-w>", "h" ], "commands": [ "workbench.action.focusLeftGroup" ], "when": "vim.mode == 'Normal'" },
+	{ "before": [ "<C-w>", "l" ], "commands": [ "workbench.action.focusRightGroup" ], "when": "vim.mode == 'Normal'" },
+	{ "before": [ "<C-w>", "j" ], "commands": [ "workbench.action.focusBelowGroup" ], "when": "vim.mode == 'Normal'" },
+	{ "before": [ "<C-w>", "k" ], "commands": [ "workbench.action.focusAboveGroup" ], "when": "vim.mode == 'Normal'" },
+	{ "before": [ "<C-w>", "w" ], "commands": [ "workbench.action.focusNextGroup" ], "when": "vim.mode == 'Normal'" },
+]
