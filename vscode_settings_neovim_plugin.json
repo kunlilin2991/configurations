@@ -1,0 +1,89 @@
+{
+  "http.proxySupport": "on",
+  "http.proxy": "http://proxy.hk.hihonor.com:8080",
+  //右边的minimap显示
+  "editor.minimap.enabled": false,
+  // ===============================
+  // Neovim for VS Code
+  // ===============================
+  "vscode-neovim.neovimExecutablePaths.windows": "C:\\Program Files\\Neovim\\bin\\nvim.exe",
+  "vscode-neovim.useMouse": true,
+  "vscode-neovim.neovimKeybindings": true,
+  "vscode-neovim.useCtrlKeys": true,
+  "vscode-neovim.useSystemClipboard": false,
+  "vscode-neovim.ctrlKeysForNormalMode": [],
+  "vscode-neovim.ctrlKeysForInsertMode": [],
+  "vscode-neovim.ctrlKeysForVisualMode": [],
+  "vscode-neovim.ctrlKeysForOperatorPendingMode": [],
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "editor.renderLineHighlight": "all",
+  "editor.renderLineHighlightOnlyWhenFocus": true,
+  "files.autoSave": "afterDelay",
+
+  //高亮当前行设置
+  "workbench.colorCustomizations": {
+    "editor.lineHighlightBackground": "#1E1E2E", // 柔和的背景色
+    "editor.lineHighlightBorder": "#636989"     // 边框色，增强区分度
+  },
+
+  // =====================================================
+  // 代码检索与跳转
+  // =====================================================
+  //定义LSP引擎
+  "python.languageServer": "Pylance",
+  "python.analysis.diagnosticSeverityOverrides": { "reportMissingImports": "error" },
+  // 禁用默认的 MSVC IntelliSense，让 clangd 接管
+  "C_Cpp.intelliSenseEngine": "Disabled",
+  "C_Cpp.autocomplete": "Disabled",
+  "C_Cpp.errorSquiggles": "Disabled",
+  "C_Cpp.workspaceParsingPriority": "low",
+  "C_Cpp.loggingLevel": "Error",
+  "C_Cpp.formatting": "", // 留空自动查找 PATH 中的 clangd，自定义路径可填如 "D:/LLVM/bin/clangd.exe"
+  "C_Cpp.indentationEngine": "Default", 
+  "C_Cpp.dimInactiveRegions": false,
+
+  // ===============================
+  // clangd 核心配置
+  // ===============================
+  "clangd.arguments": [
+    "--background-index",
+    "--completion-style=detailed",
+    "--header-insertion=iwyu",
+    "--pch-storage=memory",
+    "--clang-tidy=false"          // 关闭 clang-tidy
+  ],
+  "clangd.enableHover": false,     // 是否启用悬停提示（Hover）功能
+  "clangd.inlayHints.enable": false, // 关闭 clangd 内联提示，避免与 VSCode 自带冲突
+  "clangd.diagnostics.enable": false, // 诊断信息
+
+  // Clangd Inactive Regions Settings, ifdef delimiters
+  "clangd.inactiveRegions.useBackgroundHighlight": false,
+  "clangd.inactiveRegions.opacity": 1,
+  // 智能缩进
+  "editor.autoIndent": "advanced",
+  "editor.formatOnType": true,
+  "editor.formatOnPaste": true,
+  "editor.insertSpaces": false,
+
+  // 参数提示循环显示
+  "editor.parameterHints.cycle": true,
+
+  "editor.gotoLocation.multipleDefinitions": "gotoAndPeek",
+  "editor.gotoLocation.multipleImplementations": "gotoAndPeek",
+  "editor.gotoLocation.multipleTypeDefinitions": "gotoAndPeek",
+  "editor.gotoLocation.preferDefinitions": true,
+  "editor.gotoLocation.preferOpenEditors": true, // 优先显示已打开的文件中的匹配项
+  "editor.gotoLocation.showIcons": true, // 面板中显示文件类型图标
+  // 查找函数引用时，自动聚焦到引用面板
+  "references.preferredLocation": "view",
+  // 引用面板默认展开所有结果
+  "references.view.expandMode": "all",
+  // 显示引用的行号和列号
+  "references.view.showColumns": true,
+  //屏蔽几个关键检索的按键，只用于代码检索
+  "vim.useCtrlKeys": true,
+}
