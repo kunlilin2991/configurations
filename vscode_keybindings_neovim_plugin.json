@@ -1,79 +1,164 @@
--- Options are automatically loaded before lazy.nvim startup
--- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
--- Add any additional options here
+-- Keymaps are automatically loaded on the VeryLazy event
+-- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+-- Add any additional keymaps here
 
--- leader key
-vim.g.mapleader = ";"
-vim.g.maplocalleader = ";"
+-- 到行首和行尾
+vim.keymap.set("n", "le", "$", { noremap = true, silent = true })
+vim.keymap.set("n", "lb", "0", { noremap = true, silent = true })
 
---le lb in keymap.lua
+-- 块选择替换为leader v，不再是默认的Ctrl v
+vim.keymap.set("n", "<leader>v", "<C-v>", { noremap = true, silent = true })
 
--- 搜索相关设置
-vim.opt.hlsearch = true       -- 高亮搜索
-vim.opt.incsearch = true      -- 实时搜索
-vim.opt.ignorecase = true     -- 忽略大小写
-vim.opt.smartcase = true      -- 有大写时区分大小写
-
--- 语法与显示
-vim.cmd("syntax on")          -- 语法高亮
-vim.opt.showmatch = true      -- 匹配符号高亮
--- 文件编码
-vim.opt.encoding = "utf-8"
--- 使用 Unix/Linux 换行符（LF）
-vim.opt.fileformat = "unix"
-vim.opt.fileformats = { "unix", "dos", "mac" }
-
--- 缩进
-vim.opt.smartindent = true
-vim.opt.autoindent = true
-
--- 高亮当前行跟列
-vim.opt.cursorline = true
-vim.opt.cursorcolumn = true
--- 只在当前窗口高亮（避免分屏干扰）
-vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
-  callback = function()
-    vim.opt_local.cursorline = true
-    vim.opt_local.cursorcolumn = true
+-- 窗口切换（等价 nnoremap）
+vim.keymap.set("n", "wn", "<C-w><C-w>", { desc = "Next window" })
+vim.keymap.set("n", "<leader>wl", "<C-w>l", { desc = "Window right" })
+vim.keymap.set("n", "<leader>wr", "<C-w>h", { desc = "Window left" })
+vim.keymap.set("n", "<leader>wj", "<C-w>j", { desc = "Window down" })
+vim.keymap.set("n", "<leader>wk", "<C-w>k", { desc = "Window up" })
+-- 清除搜索高亮
+vim.keymap.set(
+  "n",
+  "<leader>/",
+  function()
+    vim.fn.setreg("/", "")
+    vim.cmd("nohlsearch")
   end,
-})
+  { desc = "Clear search highlight" }
+)
 
-vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
-  callback = function()
-    vim.opt_local.cursorline = false
-    vim.opt_local.cursorcolumn = false
-  end,
-})
--- Insert 模式只高亮行
-vim.api.nvim_create_autocmd("InsertEnter", {
-  callback = function()
-    vim.opt_local.cursorcolumn = false
-  end,
-})
+-- 复制到系统剪贴板
+vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank to system clipboard" })
+-- 整行复制
+vim.keymap.set("n", "<leader>Y", '"+Y', { desc = "Yank line to system clipboard" })
+-- 从系统剪贴板粘贴
+vim.keymap.set({ "n", "v" }, "<leader>p", '"+p', { desc = "Paste from system clipboard" })
+-- 显式删除并 yank
+vim.keymap.set({ "n", "v" }, "<leader>d", "d", { desc = "Delete with yank" })
 
-vim.api.nvim_create_autocmd("InsertLeave", {
-  callback = function()
-    vim.opt_local.cursorcolumn = true
-  end,
-})
--- 确保neovim不使用系统剪贴板，除非用户明确设置
-vim.opt.clipboard = ""
+-- Flash 实现快速跳转 easymotion的功能
+local flash = require("flash")
+-- word motions
+vim.keymap.set("n", "<leader><leader>w", function()
+  flash.jump({
+    search = { mode = "forward" },
+    pattern = "\\<\\w",
+  })
+end, { desc = "Flash EasyMotion w" })
 
--- 关闭全局诊断，用户可以根据需要在特定文件或项目中启用
-vim.diagnostic.enable(false)
+vim.keymap.set("n", "<leader><leader>b", function()
+  flash.jump({
+    search = { mode = "backward" },
+    pattern = "\\<\\w",
+  })
+end, { desc = "Flash EasyMotion b" })
 
--- 默认缩进为 4 个空格
-vim.opt.tabstop = 4        -- 一个 Tab 显示为 4 个空格
-vim.opt.shiftwidth = 4    -- 自动缩进使用 4 个空格
-vim.opt.softtabstop = 4   -- 插入模式下 Tab = 4 个空格
-vim.opt.expandtab = true  -- 使用空格代替 Tab
--- linux kernel风格是8个
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "c", "cpp" },
-  callback = function()
-    vim.opt_local.tabstop = 8
-    vim.opt_local.shiftwidth = 8
-    vim.opt_local.softtabstop = 8
-    vim.opt_local.expandtab = false
-  end,
-})
+vim.keymap.set("n", "<leader><leader>e", function()
+  flash.jump({
+    search = { mode = "forward" },
+    pattern = "\\w\\>",
+  })
+end, { desc = "Flash EasyMotion e" })
+-- f / F / t / T
+vim.keymap.set({ "n", "x", "o" }, "<leader><leader>f", function()
+  flash.jump({ search = { mode = "forward" } })
+end, { desc = "Flash EasyMotion f" })
+
+vim.keymap.set({ "n", "x", "o" }, "<leader><leader>F", function()
+  flash.jump({ search = { mode = "backward" } })
+end, { desc = "Flash EasyMotion F" })
+
+vim.keymap.set({ "n", "x", "o" }, "<leader><leader>t", function()
+  flash.jump({
+    search = { mode = "forward" },
+    jump = { offset = -1 },
+  })
+end, { desc = "Flash EasyMotion t" })
+
+vim.keymap.set({ "n", "x", "o" }, "<leader><leader>T", function()
+  flash.jump({
+    search = { mode = "backward" },
+    jump = { offset = 1 },
+  })
+end, { desc = "Flash EasyMotion T" })
+
+-- j / k 行跳转
+vim.keymap.set("n", "<leader><leader>j", function()
+  flash.jump({
+    search = { mode = "forward" },
+    pattern = "^",
+  })
+end, { desc = "Flash EasyMotion j" })
+
+vim.keymap.set("n", "<leader><leader>k", function()
+  flash.jump({
+    search = { mode = "backward" },
+    pattern = "^",
+  })
+end, { desc = "Flash EasyMotion k" })
+
+-- Mini Comment 注释切换
+vim.keymap.set({ "n", "v" }, "<leader>cc", function()
+  require("mini.comment").toggle()
+end, { desc = "Comment toggle" })
+vim.keymap.set({ "n", "v" }, "<leader>cu", function()
+  require("mini.comment").toggle({ force = false })
+end, { desc = "Comment uncomment" })
+
+-- 只在vscode-neovim中生效的功能
+vim.keymap.set({ "n", "v" }, "<leader>cu", function()
+  require("mini.comment").toggle({ force = false })
+end, { desc = "Comment uncomment" })
+-- 窗口切换
+if vim.g.vscode then
+  vim.keymap.set("n", "<leader>wh", function()
+    vim.fn.VSCodeNotify("workbench.action.focusLeftGroup")
+  end)
+  vim.keymap.set("n", "<leader>wj", function()
+    vim.fn.VSCodeNotify("workbench.action.focusBelowGroup")
+  end)
+  vim.keymap.set("n", "<leader>wk", function()
+    vim.fn.VSCodeNotify("workbench.action.focusAboveGroup")
+  end)
+  vim.keymap.set("n", "<leader>wl", function()
+    vim.fn.VSCodeNotify("workbench.action.focusRightGroup")
+  end)
+end
+
+-- 缩进功能
+if vim.g.vscode then
+  vim.keymap.set("n", "<leader>i", function()
+    vim.fn.VSCodeNotify("editor.action.reindentlines")
+  end, { desc = "Reindent line (VSCode)" })
+
+  vim.keymap.set("v", "<leader>i", function()
+    vim.fn.VSCodeNotify("editor.action.reindentlines")
+  end, { desc = "Reindent selection (VSCode)" })
+end
+if vim.g.vscode then
+	vim.keymap.set("n", "==", function()
+	  local line = vim.fn.line(".")
+	  local file = vim.fn.expand("%:p")
+
+	  vim.fn.system({
+		"clang-format",
+		"-lines=" .. line .. ":" .. line,
+		file,
+	  })
+
+	  -- 重新加载 buffer
+	  vim.cmd("checktime")
+	end, { desc = "Format current line (clang-format)" })
+	vim.keymap.set("v", "==", function()
+	  local start = vim.fn.line("'<")
+	  local finish = vim.fn.line("'>")
+	  local file = vim.fn.expand("%:p")
+
+	  vim.fn.system({
+		"clang-format",
+		"-lines=" .. start .. ":" .. finish,
+		file,
+	  })
+
+	  vim.cmd("checktime")
+	end, { desc = "Format selected lines (clang-format)" })
+end
