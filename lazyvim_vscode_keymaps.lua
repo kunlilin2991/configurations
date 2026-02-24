@@ -135,10 +135,30 @@ if vim.g.vscode then
   end, { desc = "Reindent selection (VSCode)" })
 end
 if vim.g.vscode then
-  vim.keymap.set("n", "==", function()
-    vim.fn.VSCodeNotify("editor.action.reindentlines")
-  end, { desc = "== reindent via VSCode" })
-  vim.keymap.set("v", "==", function()
-    vim.fn.VSCodeNotify("editor.action.reindentlines")
-  end, { desc = "== reindent via VSCode" })
+	vim.keymap.set("n", "==", function()
+	  local line = vim.fn.line(".")
+	  local file = vim.fn.expand("%:p")
+
+	  vim.fn.system({
+		"clang-format",
+		"-lines=" .. line .. ":" .. line,
+		file,
+	  })
+
+	  -- 重新加载 buffer
+	  vim.cmd("checktime")
+	end, { desc = "Format current line (clang-format)" })
+	vim.keymap.set("v", "==", function()
+	  local start = vim.fn.line("'<")
+	  local finish = vim.fn.line("'>")
+	  local file = vim.fn.expand("%:p")
+
+	  vim.fn.system({
+		"clang-format",
+		"-lines=" .. start .. ":" .. finish,
+		file,
+	  })
+
+	  vim.cmd("checktime")
+	end, { desc = "Format selected lines (clang-format)" })
 end
