@@ -1,42 +1,79 @@
-[
-    // =====================================================
-	// vim的代码检索 函数跳转 导航栈快速配置
-	// =====================================================
-    //Ctrl+\ 跳转到函数原型/定义
-    { "key": "ctrl+\\", "command": "editor.action.revealDefinition" },
-    //Ctrl+] 跳转到函数声明
-    { "key": "ctrl+]", "command": "editor.action.goToDeclaration", "when": "editorTextFocus && !editorReadonly"},
-    //Ctrl+[ 跳转到函数被引用的地方 vscode原生为ctrl + shift + o
-	{ "key": "ctrl+shift+r", "command": "editor.action.findReferences", "when": "editorTextFocus && !editorReadonly" },
-    // 3. 严格匹配 Vim：Ctrl+I 导航栈前进（下一个位置）
-    {
-        "key": "ctrl+i",
-        "command": "workbench.action.navigateForward",
-        "when": "editorTextFocus && workbench.navigation.stack.forwardAvailable",
-        "priority": 100 // 提高优先级，覆盖默认映射（如 Tab）
-    },
-    // 4. 严格匹配 Vim：Ctrl+O 导航栈后退（上一个位置）
-    {
-        "key": "ctrl+o",
-        "command": "workbench.action.navigateBack",
-        "when": "editorTextFocus && workbench.navigation.stack.backAvailable",
-        "priority": 100 // 提高优先级，覆盖默认映射
-    },
-    // 5. 备用返回：Ctrl+T 导航栈后退（与你的原始需求一致）
-    { "key": "ctrl+alt+t", "command": "workbench.action.navigateBack", "when": "editorTextFocus && workbench.navigation.stack.backAvailable" },
+-- Options are automatically loaded before lazy.nvim startup
+-- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
+-- Add any additional options here
 
-    //Ctrl+[ 查看导航栈完整记录（替代之前的 Ctrl+I O）
-    { "key": "ctrl+[", "command": "workbench.action.navigationStack.show", "when": "editorTextFocus" },
-    // 解决冲突：禁用 Ctrl+I 与 Tab 的默认映射
-    { "key": "ctrl+i", "command": "-tab", "when": "editorTextFocus" },
-    // 解决冲突：禁用 Ctrl+O 的默认映射（如打开文件）
-    { "key": "ctrl+o", "command": "-workbench.action.files.openFile", "when": "!editorTextFocus" },
-    //tagbar功能实现
-    //TODO list 显示
-    { "key": "ctrl+w", "command": "-workbench.action.closeActiveEditor" },
-    { "key": "ctrl+w h", "command": "workbench.action.focusLeftGroup", "when": "neovim.mode == normal" },
-    { "key": "ctrl+w j", "command": "workbench.action.focusBelowGroup", "when": "neovim.mode == normal" },
-    { "key": "ctrl+w k", "command": "workbench.action.focusAboveGroup", "when": "neovim.mode == normal" },
-    { "key": "ctrl+w l", "command": "workbench.action.focusRightGroup", "when": "neovim.mode == normal" },
-    { "key": "ctrl+u", "command": "-editor.action.deleteLines", "when": "textInputFocus"}
-]
+-- leader key
+vim.g.mapleader = ";"
+vim.g.maplocalleader = ";"
+
+--le lb in keymap.lua
+
+-- 搜索相关设置
+vim.opt.hlsearch = true       -- 高亮搜索
+vim.opt.incsearch = true      -- 实时搜索
+vim.opt.ignorecase = true     -- 忽略大小写
+vim.opt.smartcase = true      -- 有大写时区分大小写
+
+-- 语法与显示
+vim.cmd("syntax on")          -- 语法高亮
+vim.opt.showmatch = true      -- 匹配符号高亮
+-- 文件编码
+vim.opt.encoding = "utf-8"
+-- 使用 Unix/Linux 换行符（LF）
+vim.opt.fileformat = "unix"
+vim.opt.fileformats = { "unix", "dos", "mac" }
+
+-- 缩进
+vim.opt.smartindent = true
+vim.opt.autoindent = true
+
+-- 高亮当前行跟列
+vim.opt.cursorline = true
+vim.opt.cursorcolumn = true
+-- 只在当前窗口高亮（避免分屏干扰）
+vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
+  callback = function()
+    vim.opt_local.cursorline = true
+    vim.opt_local.cursorcolumn = true
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
+  callback = function()
+    vim.opt_local.cursorline = false
+    vim.opt_local.cursorcolumn = false
+  end,
+})
+-- Insert 模式只高亮行
+vim.api.nvim_create_autocmd("InsertEnter", {
+  callback = function()
+    vim.opt_local.cursorcolumn = false
+  end,
+})
+
+vim.api.nvim_create_autocmd("InsertLeave", {
+  callback = function()
+    vim.opt_local.cursorcolumn = true
+  end,
+})
+-- 确保neovim不使用系统剪贴板，除非用户明确设置
+vim.opt.clipboard = ""
+
+-- 关闭全局诊断，用户可以根据需要在特定文件或项目中启用
+vim.diagnostic.enable(false)
+
+-- 默认缩进为 4 个空格
+vim.opt.tabstop = 4        -- 一个 Tab 显示为 4 个空格
+vim.opt.shiftwidth = 4    -- 自动缩进使用 4 个空格
+vim.opt.softtabstop = 4   -- 插入模式下 Tab = 4 个空格
+vim.opt.expandtab = true  -- 使用空格代替 Tab
+-- linux kernel风格是8个
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "c", "cpp" },
+  callback = function()
+    vim.opt_local.tabstop = 8
+    vim.opt_local.shiftwidth = 8
+    vim.opt_local.softtabstop = 8
+    vim.opt_local.expandtab = false
+  end,
+})
