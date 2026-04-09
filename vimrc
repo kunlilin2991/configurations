@@ -208,6 +208,9 @@ set background=dark
 colorscheme solarized
 " colorscheme lucario
 " colorscheme molokai
+"vim不自己渲染背景
+" hi Normal ctermbg=NONE guibg=NONE
+
 
 "[a.vim](Plugin) (effect)
 "a.vim在头文件跟文件之间进行快速切换

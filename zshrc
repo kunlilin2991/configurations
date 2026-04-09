@@ -170,6 +170,8 @@ alias tags='ctags -R * && gtags' update ctags files
 [[ -z "$TMUX" ]] && exec tmux
 
 export TERM="xterm-256color"
+export COLORTERM="truecolor"
+
 
 #ls 配色
 eval `dircolors $HOME/.dircolors/dircolors.ansi-universal`
