@@ -50,4 +50,9 @@ vim.opt.backspace = "indent,eol,start"  -- 退格键行为
 vim.opt.wildmenu = true                 -- 命令补全菜单
 vim.opt.hidden = true                   -- 允许隐藏未保存 buffer
 vim.opt.spelllang = "en_us"             -- 拼写检查语言
-"
+
+-- ========== Diagnostic（诊断提示）==========
+-- 关闭行尾错误提示（virtual text）
+vim.diagnostic.config({
+  virtual_text = false,
+})

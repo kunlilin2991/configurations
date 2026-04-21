@@ -1,5 +1,16 @@
 -- 覆盖 LazyVim 自带插件配置
 return {
+  -- ========== Diagnostic 诊断配置 ==========
+  -- 关闭行尾错误提示（virtual text）
+  {
+    "LazyVim/LazyVim",
+    opts = function(_, opts)
+      vim.diagnostic.config({
+        virtual_text = false,
+      })
+    end,
+  },
+
   -- ========== bufferline: 支持 ;1~;9 跳转 ==========
   {
     "akinsho/bufferline.nvim",
@@ -71,15 +82,76 @@ return {
     opts = {
       servers = {
         clangd = {
-          -- clangd 同时提供 switchSourceHeader（替代 a.vim 和 fswitch）
           cmd = {
             "clangd",
             "--background-index",
             "--clang-tidy",
             "--header-insertion=iwyu",
             "--completion-style=detailed",
+            "--fallback-style=llvm",
           },
+          settings = {
+            clangd = {
+              fallbackFlags = {
+                "-I/usr/include",
+                "-I/usr/local/include",
+              },
+            },
+          },
+          -- compile_commands.json 集中管理：类似 gutentags
+          -- 缓存目录：~/.cache/clangd/<项目路径hash>/compile_commands.json
+          -- clangd 启动时从缓存目录读取 --compile-commands-dir
+          root_dir = require("lspconfig.util").root_pattern(
+            "compile_commands.json",
+            "compile_flags.txt",
+            ".clangd",
+            "Makefile", "CMakeLists.txt",
+            "build.gradle", "pom.xml",
+            "Cargo.toml", "go.mod",
+            ".git" -- 兜底：git 仓库根
+          ),
+          on_new_config = function(new_config, root_dir)
+            local cache_dir = vim.fn.stdpath("cache") .. "/clangd"
+            -- 用项目路径的 hash 作为子目录名
+            local project_hash = vim.fn.sha256(root_dir):sub(1, 16)
+            local cached_cc_dir = cache_dir .. "/" .. project_hash
+
+            -- 检查 1: 项目根目录已有 compile_commands.json
+            if vim.fn.filereadable(root_dir .. "/compile_commands.json") == 1 then
+              table.insert(new_config.cmd, "--compile-commands-dir=" .. root_dir)
+              return
+            end
+
+            -- 检查 2: build/ 子目录有 compile_commands.json
+            if vim.fn.filereadable(root_dir .. "/build/compile_commands.json") == 1 then
+              table.insert(new_config.cmd, "--compile-commands-dir=" .. root_dir .. "/build")
+              return
+            end
+
+            -- 检查 3: 缓存目录有 compile_commands.json
+            if vim.fn.filereadable(cached_cc_dir .. "/compile_commands.json") == 1 then
+              -- 让 clangd 从缓存目录读取
+              table.insert(new_config.cmd, "--compile-commands-dir=" .. cached_cc_dir)
+              vim.notify("使用缓存的 compile_commands.json: " .. cached_cc_dir, vim.log.levels.INFO)
+              return
+            end
+
+            -- 都没有，clangd 使用 fallback 模式
+          end,
         },
+      },
+    },
+  },
+
+  -- ========== Mason: 自动安装/管理语言服务器 ==========
+  {
+    "williamboman/mason.nvim",
+    opts = {
+      ensure_installed = {
+        "clangd",
+        "lua-language-server",
+        "shfmt",
+        "stylua",
       },
     },
   },
@@ -95,6 +167,7 @@ return {
         ["<C-n>"] = cmp.mapping.select_next_item(),
         ["<C-p>"] = cmp.mapping.select_prev_item(),
       })
+      return opts
     end,
   },
 
@@ -117,6 +190,7 @@ return {
   -- ========== indent-blankline: 替代 indentLine ==========
   {
     "lukas-reineke/indent-blankline.nvim",
+    main = "ibl", -- v3 必须指定 main
     opts = {
       indent = {
         char = "│", -- 对应你原来的 indentLine_char_list 风格

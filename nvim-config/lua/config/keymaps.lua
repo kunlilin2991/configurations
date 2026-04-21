@@ -64,9 +64,31 @@ map("n", "<leader>f", "<cmd>Telescope find_files<CR>", { desc = "查找文件" }
 -- 原 vimrc: ;jc 跳到声明, ;jd 跳到定义
 map("n", "<leader>jc", vim.lsp.buf.declaration, { desc = "跳到声明" })
 map("n", "<leader>jd", vim.lsp.buf.definition, { desc = "跳到定义" })
--- IDE 风格快捷键: Ctrl+\ 跳到定义, Ctrl+T 返回, Ctrl+O/I 跳转栈前进后退
-map("n", "<C-\\>", vim.lsp.buf.definition, { desc = "跳到定义" })
-map("n", "<C-t>", "<C-t>", { desc = "从定义返回 (tag 栈)" })
+
+-- tags 跳转（gutentags 自动生成 ctags）
+map("n", "<C-]>", "<C-]>", { desc = "tags 跳转" })
+map("n", "<C-t>", "<C-t>", { desc = "从 tags 返回" })
+
+-- IDE 风格快捷键: Ctrl+\ 跳到定义, Ctrl+O/I 跳转栈前进后退
+-- 智能跳转：LSP → tags → 搜索当前单词
+local function smart_jump_to_definition()
+  if vim.lsp.buf.definition then
+    -- 检查 LSP 是否可用且有定义
+    local clients = vim.lsp.get_clients({ bufnr = 0 })
+    if #clients > 0 then
+      vim.lsp.buf.definition()
+      return
+    end
+  end
+  -- 回退到 tags
+  if vim.fn.filereadable("tags") > 0 or vim.fn.filereadable("./tags") > 0 then
+    pcall(vim.cmd, "tjump " .. vim.fn.expand("<cword>"))
+    return
+  end
+  -- 回退到在当前文件搜索单词
+  vim.cmd("normal! *")
+end
+map("n", "<C-\\>", smart_jump_to_definition, { desc = "跳到定义（LSP→tags→搜索）" })
 map("n", "<C-o>", "<C-o>", { desc = "跳转栈后退" })
 map("n", "<C-i>", "<C-i>", { desc = "跳转栈前进" })
 

@@ -92,9 +92,6 @@ config.colors = {
 	selection_fg = "#cdd6f4",
 }
 
--- 按住shift可以在nvim中实现到wezterm的复制
-config.bypass_mouse_reporting_modifiers = "SHIFT"
-
 config.set_environment_variables = {
 	HTTP_PROXY = "",
 	HTTPS_PROXY = "",

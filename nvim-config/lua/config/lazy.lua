@@ -25,7 +25,7 @@ require("lazy").setup({
     -- LazyVim extras（按需启用）
     { import = "lazyvim.plugins.extras.lang.clangd" },     -- C/C++ LSP
     { import = "lazyvim.plugins.extras.lang.markdown" },    -- Markdown
-    { import = "lazyvim.plugins.extras.lang.python" },      -- Python（如需要）
+    -- { import = "lazyvim.plugins.extras.lang.python" },      -- Python（如需要取消注释）
     { import = "lazyvim.plugins.extras.lang.json" },        -- JSON
     -- { import = "lazyvim.plugins.extras.lang.tex" },      -- LaTeX（如需要取消注释）
 
