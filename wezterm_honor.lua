@@ -1,44 +1,33 @@
 local wezterm = require("wezterm")
-local config = wezterm.config_builder()
+local act = wezterm.action
 
--- ==============================================
--- 基础设置（Windows 10/11 自带字体，永不报错）
--- ==============================================
+local config = {}
 config.default_prog = { "pwsh.exe", "-NoLogo" }
 
--- 🔥 用系统自带字体，彻底解决所有字体报错！
-config.font = wezterm.font("Consolas")
-config.font_size = 14
-config.line_height = 1.1
+config.term = "xterm-256color"
+config.font_size = 13
+config.color_scheme = "Catppuccin Mocha"
+config.window_background_opacity = 0.85
+-- Acrylic, Tabbed, Auto
+config.win32_system_backdrop = "Auto"
 
--- Tab 栏设置
 -- hide status bar
 -- config.window_decorations = "RESIZE"
+-- Tab 栏设置
 config.enable_tab_bar = true
 config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = true
-config.window_padding = { left = 8, right = 8, top = 8, bottom = 8 }
-config.enable_scroll_bar = true
-config.scrollback_lines = 10000
 
--- 性能优化
-config.front_end = "WebGpu"
-config.cursor_blink_rate = 0
-config.window_background_opacity = 0.95
+config.window_padding = {
+	left = 10,
+	right = 10,
+	top = 8,
+	bottom = 8,
+}
 
--- 取消实现的连字否则，否则不等号会显示为数学的不等号
-config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
--- ==============================================
--- 主题
--- ==============================================
-config.color_scheme = "Catppuccin Mocha"
-
--- ==============================================
--- Tmux 风格快捷键（Ctrl+b）
--- ==============================================
 -- tmux 风格 leader 键
-config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1000 }
+config.leader = { key = "l", mods = "CTRL", timeout_milliseconds = 1000 }
 
 config.keys = {
 	-- leader + c 新 tab
@@ -56,6 +45,23 @@ config.keys = {
 	{ key = "j", mods = "LEADER", action = act.ActivatePaneDirection("Down") },
 	{ key = "k", mods = "LEADER", action = act.ActivatePaneDirection("Up") },
 	{ key = "l", mods = "LEADER", action = act.ActivatePaneDirection("Right") },
+}
+
+-- Alt + 数字切换 tab
+for i = 1, 9 do
+	table.insert(config.keys, {
+		key = tostring(i),
+		mods = "ALT",
+		action = act.ActivateTab(i - 1),
+	})
+end
+
+config.mouse_bindings = {
+	{
+		event = { Down = { streak = 1, button = "Right" } },
+		mods = "NONE",
+		action = act.PasteFrom("Clipboard"),
+	},
 }
 
 -- Catppuccin UI 优化（tab、cursor、selection、split line）
@@ -86,31 +92,10 @@ config.colors = {
 	selection_fg = "#cdd6f4",
 }
 
--- Alt + 数字切换 tab
-for i = 1, 9 do
-	table.insert(config.keys, {
-		key = tostring(i),
-		mods = "ALT",
-		action = act.ActivateTab(i - 1),
-	})
-end
-
--- ==============================================
--- 鼠标
--- ==============================================
--- 右键粘贴
-config.mouse_bindings = {
-	{
-		event = { Down = { streak = 1, button = "Right" } },
-		mods = "NONE",
-		action = wezterm.action.PasteFrom("Clipboard"),
-	},
+config.set_environment_variables = {
+	HTTP_PROXY = "",
+	HTTPS_PROXY = "",
+	NO_PROXY = "localhost,127.0.0.1,.hihonor.com,.honor.com",
 }
-
--- ==============================================
--- 路径补全
--- ==============================================
-config.enable_kitty_keyboard = true
-config.enable_csi_u_key_encoding = true
 
 return config

@@ -14,6 +14,15 @@ Remove-Module Terminal-Icons -ErrorAction SilentlyContinue
 Set-PSReadLineOption -PredictionSource History
 Set-PSReadLineOption -PredictionViewStyle ListView
 
+Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+
+# 命令参数为红色显示，否则为灰色
+Set-PSReadLineOption -Colors @{
+    Parameter = "Red"
+}
+
+
 # ========== 🔥 完整 Linux 命令兼容 ==========
 function ls { Get-ChildItem @args }
 function ll { Get-ChildItem -l @args }
