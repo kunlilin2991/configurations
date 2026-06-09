@@ -16,8 +16,8 @@ cp -r nvim-lazyvim ~/.config/nvim
 ## 设计取向(与众不同的几点)
 
 - **无 clangd / 无任何 LSP**:目标场景是 qcom / Linux 内核这类不可编译、没有 `compile_commands.json` 的大型代码仓 —— 上 clangd 只会满屏波浪线。因此本配置**没有 LSP 诊断、没有波浪线**。
-- **导航/索引全靠 gtags(GNU GLOBAL)单源**,不用 ctags、不用 LSP。带原生增量(`global -u`),保存即新。索引集中放 `~/.cache/tags/<打平的工程路径>/`,**不污染工程树**。普通工程由 gutentags(仅 `gtags_cscope` 模块)负责。
-- **Linux 内核特殊处理**:检测到内核树时关掉 gutentags,改用 `make ARCH=<arch> gtags`,**只索引单一架构**(默认 `arm64`),其余 arch 全部跳过。见下方"Linux 内核索引"。
+- **导航/索引全靠 gtags(GNU GLOBAL)单源**,不用 ctags、不用 LSP。**纯 Lua 直调 `gtags`/`global`**(Neovim 已移除 cscope,故不用 vim-gutentags/gutentags_plus)。带原生增量(`global -u`),保存即新。索引集中放 `~/.cache/tags/<打平的工程路径>/`,**不污染工程树**。普通工程用 `gtags` 建库。
+- **Linux 内核特殊处理**:检测到内核树时改用 `make ARCH=<arch> gtags`,**只索引单一架构**(默认 `arm64`),其余 arch 全部跳过。见下方"Linux 内核索引"。
 - **高亮靠 treesitter**(不需要编译)。函数/变量/成员/类型的分色就来自它。
 - **补全靠 blink.cmp**,本地候选 = gtags 符号(`global -c`)+ 片段 + buffer + 路径(无 LSP source),**置顶**。
 - **AI 补全(Copilot)默认关闭**:同一补全菜单里多一个 Copilot 源,**默认只走本地**;按 `<leader>tc` 打开才走云端,且云端候选**排在本地符号下方**。需 Node.js + `:Copilot auth`。
@@ -27,7 +27,7 @@ cp -r nvim-lazyvim ~/.config/nvim
 
 | 依赖 | 用途 |
 |------|------|
-| `GNU GLOBAL`(`gtags` / `global` / `gtags-cscope`) | **唯一索引引擎**:跳定义 / 查引用 / 补全 / 增量 |
+| `GNU GLOBAL`(`gtags` / `global`) | **唯一索引引擎**:跳定义 / 查引用 / 补全 / 增量(纯 Lua 直调) |
 | `claude`(Claude Code CLI) | claudecode.nvim 接入 |
 | `Node.js` + `:Copilot auth` | Copilot 云端补全(默认关,`<leader>tc` 开) |
 | `ripgrep`、`fd` | picker(查找文件/文本) |
@@ -45,7 +45,7 @@ cp -r nvim-lazyvim ~/.config/nvim
 | `<leader>f` | 模糊找文件 | 文件/查找组前缀 |
 | `<leader>/` | 清除搜索高亮 | grep |
 | `<leader>n` | 文件树(`<leader>e` 仍可用) | — |
-| `<leader>g*` | **gtags GscopeFind 全套** | git 组 |
+| `<leader>g{g,r,s,t,f}` | gtags 定义/引用/符号/文本/文件(global→quickfix) | git 组 |
 | `<leader>cc` | 注释/取消(`gcc`/`gc` 仍可用) | code 组前缀 |
 | `<leader>jd` / `<leader>jc` | 跳定义(gtags) | — |
 | `<C-]>` / `<C-\>` | 查定义 / 查引用(gtags,buffer-local 仅代码 buffer) | `<C-]>` 默认=跳定义 |
@@ -56,11 +56,13 @@ cp -r nvim-lazyvim ~/.config/nvim
 | `<leader>tc` | 切换 Copilot 云端补全(默认关) | — |
 | `le` / `lb` | 行尾 / 行首 | — |
 
-导航键(代码 buffer,buffer-local):`<C-]>` 查定义(`:cstag`,压 tagstack)、`<C-\>` 查引用、`<C-t>` 弹栈返回、`<C-o>`/`<C-i>` jumplist —— 后三个原生。
+导航键(代码 buffer):`<C-]>` 查定义(经 `tagfunc` 接 gtags,原生压 tagstack)、`<C-\>` 查引用(`global -r`→quickfix)、`<C-t>` 弹栈返回、`<C-o>`/`<C-i>` jumplist —— 后两个原生。
+
+> Neovim 已移除 cscope,故跳定义走 `tagfunc`(调 `global -d`)、查引用/查询直调 `global`→quickfix,都不依赖 cscope/gutentags。
 
 ## 索引落点(集中 cache,不污染工程)
 
-所有 gtags 库放在 `~/.cache/tags/<打平的工程路径>/` 下(打平规则同 gutentags):
+所有 gtags 库放在 `~/.cache/tags/<打平的工程路径>/` 下(打平命名):
 
 ```
 工程 /home/l00024352/linux
@@ -69,7 +71,7 @@ cp -r nvim-lazyvim ~/.config/nvim
                    └── .kindex.ok   (仅内核:全量完成标记)
 ```
 
-- 普通工程:gutentags 直接写到这里。
+- 普通工程:`gtags <cache目录>` 直接写到这里。
 - 内核:`make gtags` 先写内核根,**立即 move 到上面 cache 目录**;`global -u` 增量只写 cache。**编辑期内核树零写入**;游离的 `GTAGS/GRTAGS/GPATH`(中断残留)在下次打开内核文件时**自动清理**。
 
 ## Linux 内核索引
@@ -100,7 +102,7 @@ lua/plugins/
   colorscheme.lua        gruvbox-material + 高区分度主题集合
   treesitter.lua         C/C++ 等高亮(无 markdown)
   coding.lua             blink.cmp + global/片段/buffer/路径 source(+ Copilot 默认关)
-  tags.lua               全 gtags 索引(gutentags 普通工程 + 内核 make/move/增量 + 导航键)
+  tags.lua               全 gtags 索引(纯 Lua 直调 global:建库/增量 + tagfunc 跳定义 + 查引用)
   editor.lua             aerial / undotree(lua) / mini.align / rainbow / todo / comment
   ai.lua                 claudecode.nvim + Copilot(blink 源,默认关)
 ```

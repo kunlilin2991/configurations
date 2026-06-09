@@ -2,6 +2,11 @@
 -- 本文件在 LazyVim 默认 options 之后加载,因此这里的设置会覆盖 LazyVim 默认。
 local opt = vim.opt
 
+-- leader = ";" —— 必须在这里设!LazyVim 默认 options 会把 init.lua 设的 mapleader
+-- 覆盖成空格;本文件在其之后加载,这里设才真正生效(否则所有 ; 开头的键全失效)。
+vim.g.mapleader = ";"
+vim.g.maplocalleader = ";"
+
 -- 缩进:一律 4 空格(vimrc: shiftwidth/tabstop/softtabstop=4 + expandtab)
 opt.tabstop = 4
 opt.shiftwidth = 4

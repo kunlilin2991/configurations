@@ -1,5 +1,14 @@
 -- 从 vimrc 迁移过来的编辑增强插件
 return {
+  -- flash.nvim:本配置 leader=";",而 flash 默认会占用 ";"/"," (f/t 重复跳转),
+  -- 与所有 ; 开头的 leader 键冲突(尤其 ;;w / ;;f)。这里去掉 ;/, ,只保留 f/F/t/T 增强。
+  {
+    "folke/flash.nvim",
+    opts = {
+      modes = { char = { keys = { "f", "F", "t", "T" } } },
+    },
+  },
+
   -- 注释(vimrc: nerdcommenter 的 ;cc 注释 / ;cu 取消,各做一件事)
   -- 不接管 gc(原生 gcc/gc 的 toggle 保留),只用其 API 实现显式 注释/取消。
   {

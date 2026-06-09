@@ -1,7 +1,7 @@
 # nvim-lazyvim 键位速查
 
 Leader 键为 **`;`**（在 `init.lua` 设置）。下表中 `<leader>` 即 `;`。
-无 LSP/clangd，代码导航全靠 ctags + gtags(gutentags_plus)。
+无 LSP/clangd，代码导航全靠 gtags（纯 Lua 直调 GNU GLOBAL，无 cscope/gutentags）。
 
 ## 一、基础编辑（`lua/config/keymaps.lua`）
 
@@ -30,6 +30,14 @@ Leader 键为 **`;`**（在 `init.lua` 设置）。下表中 `<leader>` 即 `;`�
 | `;/` | 清除搜索高亮 |
 | `;.` | 重复上一条命令行命令（`:<up><cr>`） |
 
+### 快速跳转（easymotion → flash.nvim，n/x/o）
+| 键位 | 作用 |
+|------|------|
+| `;;w` / `;;W` | 跳到词首：向前 / 向后（双字符标签，覆盖全部词） |
+| `;;f` / `;;F` | 跳到字符：向前 / 向后（输入字符后出标签再跳） |
+
+> flash 默认的 `s`（跳转）/ `S`（treesitter 跳转）也仍可用。
+
 ### 文件 / 文件树
 | 键位 | 作用 |
 |------|------|
@@ -49,8 +57,8 @@ Leader 键为 **`;`**（在 `init.lua` 设置）。下表中 `<leader>` 即 `;`�
 ### 定义 / 引用 / 栈（代码 buffer，buffer-local）
 | 键位 | 作用 | 模式 |
 |------|------|------|
-| `<C-]>` | 查定义（`:cstag`，压 tagstack） | n |
-| `<C-\>` | 查引用（谁用了这个符号） | n |
+| `<C-]>` | 查定义（`tagfunc` 接 gtags，压 tagstack） | n |
+| `<C-\>` | 查引用（`global -r`→quickfix，谁用了这个符号） | n |
 | `<C-t>` | 弹栈返回 | n（原生） |
 | `<C-o>` / `<C-i>` | jumplist 后退 / 前进 | n（原生） |
 | `;jd` | 跳到定义（gtags） | n |
@@ -60,19 +68,16 @@ Leader 键为 **`;`**（在 `init.lua` 设置）。下表中 `<leader>` 即 `;`�
 >
 > **Linux 内核树**：以上自动改用 `make ARCH=arm64 gtags` 生成的单 arch 索引（改 `lua/plugins/tags.lua` 顶部 `KERNEL_ARCH`）。保存（`:w`）后台 `global -u` 增量；`:KernelIndex` 手动全量重建。索引集中在 `~/.cache/tags/<打平路径>/`，不污染工程树。详见 `README.md`。
 
-### gtags 符号查询（对光标下单词 `<cword>`）
-| 键位 | 查询类型 |
-|------|----------|
-| `;gs` | 符号(symbol) |
-| `;gg` | 定义(definition) |
-| `;gc` | 调用者(callers) |
-| `;gt` | 文本(text) |
-| `;ge` | egrep 模式 |
-| `;gd` | 被调用者(called) |
-| `;ga` | 赋值(assignment) |
-| `;gz` | 类型 z 查询 |
-| `;gf` | 找文件（对 `<cfile>`） |
-| `;gi` | 找包含此文件的文件（对 `<cfile>`） |
+### gtags 查询（`global`→quickfix，对光标下单词 `<cword>`）
+| 键位 | 查询 | global |
+|------|------|--------|
+| `;gg` | 定义 | `-d` |
+| `;gr` | 引用（谁用了它） | `-r` |
+| `;gs` | 符号 | `-s` |
+| `;gt` | 文本 | `-g` |
+| `;gf` | 文件 | `-P` |
+
+> Neovim 已移除 cscope，故只保留 `global` 原生支持的查询;callers/callees/assignment/egrep 等 cscope 专有功能不再提供（"谁用了它"用 `;gr` 引用即可）。
 
 ## 三、结构 / 历史 / 切换（`lua/plugins/editor.lua`）
 
