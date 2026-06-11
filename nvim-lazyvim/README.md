@@ -80,10 +80,12 @@ cp -r nvim-lazyvim ~/.config/nvim
 
 - **自动检测**:文件位于内核树(`arch/` + `Kbuild` + Makefile 含 `VERSION`/`PATCHLEVEL`)时自动生效。
 - **单 arch**:`make ARCH=<arch> gtags` 只索引当前 arch(读 SRCARCH),含内核宏解析(`scripts/tags.sh`),**无需编译内核**。
-- **首次自动后台全量**:无完整索引时自动生成 → move 到 cache → 写 `.kindex.ok`。
-- **保存即增量**:`:w` 后台 `global -u`(只重扫改动文件,快),跳定义/查引用即时刷新。
-- **防半截索引**:全量成功才写 `.kindex.ok`;中途退出被杀不会留下"看似完整"的索引,下次自动重建。
-- **`:KernelIndex`**:手动强制全量重建。
+- **开箱即用,自动建索引但不卡界面**:打开内核文件**立即显示**;**渲染完成后(延后 500ms)**才在后台起 `make gtags`,且带 **`nice -n19 ionice -c3`**(idle IO,不抢 nvim 渲染)。`tags.lua` 顶部 `KERNEL_AUTO_INDEX = true`;极慢挂载上若仍嫌吵可改 `false` → 改用 `:GtagsIndex` 手动建。
+- **保存即增量**:索引建好后,`:w` 后台 `global -u`(只重扫改动文件,快)。
+- **防半截索引**:全量成功才写 `.kindex.ok`;中途退出被杀不会留下"看似完整"的索引,下次重建。
+- **不阻塞打开**:接线(`vim.schedule`)和构建(`defer_fn` + idle 优先级)都在文件渲染之后进行。
+- 普通工程(非内核)通常较快,同样自动建库。
+- `:GtagsIndex`(=`:KernelIndex`)手动强制重建。
 - 全程后台异步(`jobstart`),**不阻塞 nvim 退出**。
 
 **改架构**:编辑 `lua/plugins/tags.lua` 顶部 `KERNEL_ARCH`(默认 `"arm64"`)。

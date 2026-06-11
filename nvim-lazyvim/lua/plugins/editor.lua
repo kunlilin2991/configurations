@@ -79,7 +79,7 @@ return {
 
   -- 对齐(vim-easy-align → mini.align;ga 启动,可视模式 <CR> 同效)
   {
-    "echasnovski/mini.align",
+    "nvim-mini/mini.align",
     opts = {},
     keys = {
       { "ga", mode = { "n", "x" }, desc = "对齐(mini.align)" },

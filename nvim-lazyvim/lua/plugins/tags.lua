@@ -15,6 +15,11 @@ local KERNEL_ARCH = "arm64"
 -- ║  ▲▲▲  改这里(可改 "x86" / "arm" / "riscv" / "loongarch" 等)▲▲▲      ║
 -- ╚══════════════════════════════════════════════════════════════════════╝
 
+-- 内核全量索引(make gtags)很重。默认 true:**渲染完成后**才在后台起构建,
+-- 且带 nice/ionice(idle IO,不抢 nvim 渲染),开箱即用不卡界面。
+-- 若在 /mnt 等极慢挂载上仍嫌吵,可改 false → 改用 :GtagsIndex 手动建。
+local KERNEL_AUTO_INDEX = true
+
 local CACHE = vim.fn.expand("~/.cache/tags")
 
 -- 工程根 → cache 子目录(打平命名):/home/u/linux → ~/.cache/tags/home-u-linux
@@ -69,29 +74,37 @@ local function kernel_root(path)
   return nil
 end
 
--- 工程根:内核根优先,否则向上找工程标志
+-- 工程根:内核根优先,否则向上找工程标志(带缓存,避免在慢挂载上反复遍历)
 local MARKERS = { ".root", ".svn", ".git", ".hg", ".project" }
+local proot_cache = {}
 local function project_root(path)
-  local k = kernel_root(path)
-  if k then
-    return k
-  end
   if not path or path == "" then
     return nil
   end
   local dir = vim.fn.fnamemodify(path, ":p:h")
-  while dir and dir ~= "" do
+  if proot_cache[dir] ~= nil then
+    return proot_cache[dir] or nil
+  end
+  local k = kernel_root(path)
+  if k then
+    proot_cache[dir] = k
+    return k
+  end
+  local cur = dir
+  while cur and cur ~= "" do
     for _, m in ipairs(MARKERS) do
-      if vim.fn.isdirectory(dir .. "/" .. m) == 1 or vim.fn.filereadable(dir .. "/" .. m) == 1 then
-        return dir
+      if vim.fn.isdirectory(cur .. "/" .. m) == 1 or vim.fn.filereadable(cur .. "/" .. m) == 1 then
+        proot_cache[dir] = cur
+        return cur
       end
     end
-    local parent = vim.fn.fnamemodify(dir, ":h")
-    if parent == dir then
+    local parent = vim.fn.fnamemodify(cur, ":h")
+    if parent == cur then
       break
     end
-    dir = parent
+    cur = parent
   end
+  proot_cache[dir] = false
   return nil
 end
 
@@ -154,15 +167,16 @@ function _G.gtags_query(flag)
     return
   end
   vim.fn.setqflist({}, " ", { title = "gtags " .. flag .. " " .. word, items = items })
-  if #items == 1 then
-    vim.cmd("cfirst")
-  else
-    vim.cmd("copen")
+  vim.cmd("cfirst") -- 总是跳到第一个结果
+  if #items > 1 then
+    vim.cmd("copen") -- 多个结果再打开列表(焦点回到代码窗)
+    vim.cmd("wincmd p")
   end
 end
 
 -- ── 建库 / 增量 ──
 local indexing, dirty = {}, {}
+local hinted = {} -- root -> 已提示过"手动建索引"
 local incr_update -- forward
 
 local function index_done(root)
@@ -194,8 +208,10 @@ local function full_build(root, quiet)
   if not quiet then
     vim.notify("内核索引中(全量,ARCH=" .. KERNEL_ARCH .. "):" .. root .. " …", vim.log.levels.INFO)
   end
+  -- nice + ionice(若有)降优先级,避免在慢挂载上拖垮界面
   local sh = string.format(
-    "make -C %s ARCH=%s -s gtags && mkdir -p %s && mv -f %s/GTAGS %s/GRTAGS %s/GPATH %s/",
+    "IONICE=; command -v ionice >/dev/null 2>&1 && IONICE='ionice -c3'; "
+      .. "nice -n19 $IONICE make -C %s ARCH=%s -s gtags && mkdir -p %s && mv -f %s/GTAGS %s/GRTAGS %s/GPATH %s/",
     vim.fn.shellescape(root),
     KERNEL_ARCH,
     vim.fn.shellescape(d),
@@ -235,7 +251,7 @@ local function normal_build(root, quiet)
   if not quiet then
     vim.notify("建立 gtags 索引:" .. root .. " …", vim.log.levels.INFO)
   end
-  vim.fn.jobstart({ "gtags", d }, {
+  vim.fn.jobstart({ "nice", "-n", "19", "gtags", d }, {
     cwd = root,
     env = { GTAGSROOT = root },
     on_exit = function(_, code)
@@ -308,9 +324,19 @@ local function setup_nav(buf)
   vim.b[buf].gtags_nav_done = true
   if is_kernel_root(root) then
     clean_orphans(root)
-  end
-  if not index_done(root) then
-    index_root(root, false)
+    if not index_done(root) then
+      if KERNEL_AUTO_INDEX then
+        -- 渲染完成后(延后 500ms)才起后台构建,带 nice/ionice,不卡打开
+        vim.defer_fn(function()
+          full_build(root, false)
+        end, 500)
+      elseif not hinted[root] then
+        hinted[root] = true
+        vim.notify("内核未建 gtags 索引:运行 :GtagsIndex 建立(全量较久,后台进行)", vim.log.levels.INFO)
+      end
+    end
+  elseif not index_done(root) then
+    normal_build(root, false) -- 普通工程通常较快,自动建
   end
 end
 
@@ -323,9 +349,14 @@ local grp = vim.api.nvim_create_augroup("Gtags", { clear = true })
 vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
   group = grp,
   callback = function(ev)
-    setup_nav(ev.buf)
+    -- 延后到文件渲染之后,避免在慢挂载(/mnt)上同步遍历阻塞打开
+    vim.schedule(function()
+      if vim.api.nvim_buf_is_valid(ev.buf) then
+        setup_nav(ev.buf)
+      end
+    end)
   end,
-  desc = "gtags:接线 + 缺库则建",
+  desc = "gtags:接线 + 缺库则建(延后,不阻塞打开)",
 })
 vim.api.nvim_create_autocmd("BufWritePost", {
   group = grp,
